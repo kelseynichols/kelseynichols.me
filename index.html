@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#120C0B" />
+    <title>Kelsey Nichols — Creative</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page page--creative">
+      <!-- Header -->
+      <header class="header" aria-label="Site header">
+        <a class="site-name" href="./" data-nav="home">Kelsey Nichols</a>
+
+        <nav class="filters" aria-label="Filters">
+          <button class="filter-btn" type="button" data-filter="photo" aria-label="Filter photos" aria-pressed="false">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="3.5" y="5.5" width="17" height="13" rx="0.5" stroke="currentColor"/>
+              <circle cx="12" cy="12" r="2.5" stroke="currentColor"/>
+            </svg>
+          </button>
+          <button class="filter-btn" type="button" data-filter="web" aria-label="Filter websites" aria-pressed="false">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="3.5" y="3.5" width="17" height="17" rx="0.5" stroke="currentColor"/>
+              <path d="M3.75 7.5H20.25" stroke="currentColor"/>
+              <circle cx="5.25" cy="5.25" r="0.5" stroke="currentColor" stroke-width="0.5"/>
+              <circle cx="8.25" cy="5.25" r="0.5" stroke="currentColor" stroke-width="0.5"/>
+              <circle cx="11.25" cy="5.25" r="0.5" stroke="currentColor" stroke-width="0.5"/>
+            </svg>
+          </button>
+          <button class="filter-btn" type="button" data-filter="writing" aria-label="Filter writing" aria-pressed="false">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="5" y="3.5" width="14" height="17" rx="0.5" stroke="currentColor"/>
+              <line x1="7.5" y1="7" x2="16.5" y2="7" stroke="currentColor"/>
+              <line x1="7.5" y1="10" x2="16.5" y2="10" stroke="currentColor"/>
+              <line x1="7.5" y1="13" x2="16.5" y2="13" stroke="currentColor"/>
+              <line x1="7.5" y1="16" x2="13.5" y2="16" stroke="currentColor"/>
+            </svg>
+          </button>
+        </nav>
+
+        <div class="meta" aria-label="Current date and time">
+          <span class="meta__date" id="metaDate">01.19.2025</span>
+          <span class="meta__time" id="metaTime">18:16 GMT-8</span>
+        </div>
+      </header>
+
+      <!-- Carousel -->
+      <main class="stage" aria-label="Portfolio carousel">
+        <div class="track" id="track" role="list">
+          <!-- Items are rendered by JS -->
+        </div>
+      </main>
+
+      <!-- About -->
+      <section class="about panel" id="about" aria-label="About" aria-hidden="true">
+        <div class="about__inner panel__inner">
+          <h1 class="about__lede panel__lede" data-reveal>I've played every position on this team</h1>
+
+          <p class="about__body" data-reveal>Ten years ago I was the one staring at a blinking cursor, no roadmap, no idea if any of it would work. Since then I've built products from nothing, run engineering teams, and sat in the CTO chair at a company that grew faster than any plan could keep up with. I've been the founder and the hire, the builder and the one calling the shots — which means I've made most of the mistakes already, so you don't have to.</p>
+
+          <p class="about__body" data-reveal>Outside of work, I shoot film. There's no undo button, no instant preview — just patience, a good eye, and the willingness to get it wrong a few times before you get it right. It turns out that's most of what good engineering is too. The best products, like the best photographs, come from paying close attention and being unafraid to wait for the shot.</p>
+
+          <div class="about__point">
+            <div class="about__point-header">
+              <span class="about__point-num about__body">01.</span>
+              <p class="about__body about__point-title" data-reveal>The user, always.</p>
+            </div>
+            <p class="about__body about__point-detail" data-reveal>Nobody wants your architecture diagram. They want the thing that solves their problem. I've watched brilliant engineers fall in love with their own cleverness and lose the plot entirely — the person on the other end of the product doesn't care how elegant the system is, only whether it works for them.</p>
+          </div>
+
+          <div class="about__point">
+            <div class="about__point-header">
+              <span class="about__point-num about__body">02.</span>
+              <p class="about__body about__point-title" data-reveal>Fun is a signal.</p>
+            </div>
+            <p class="about__body about__point-detail" data-reveal>Fun is not a perk, it's a warning light. If the team building the thing has stopped enjoying the work, the thing they're building is usually already going sideways. I've never seen a miserable team ship something great, and I don't believe I ever will.</p>
+          </div>
+
+          <div class="about__point">
+            <div class="about__point-header">
+              <span class="about__point-num about__body">03.</span>
+              <p class="about__body about__point-title" data-reveal>Restraint is the work.</p>
+            </div>
+            <p class="about__body about__point-detail" data-reveal>The best code is the code you didn't write. Every feature is a future liability. Every line is something someone has to maintain, explain, or eventually rip out. Restraint isn't the absence of ambition — it's usually where the real ambition is hiding.</p>
+          </div>
+
+          <p class="about__body" data-reveal>I'm not interested in being a voice on a monthly call. I want to be in it with you — asking the annoying questions early, building the thing that actually works, and sticking around long enough to see it through. If you're standing where I was a decade ago, idea in hand and nothing else, let's talk.</p>
+        </div>
+      </section>
+
+      <!-- Contact -->
+      <section class="contact panel" id="contact" aria-label="Contact" aria-hidden="true">
+        <div class="contact__inner panel__inner">
+          <h1 class="contact__lede panel__lede" data-reveal>Let's talk</h1>
+
+          <p class="contact__intro" data-reveal>Tell me what you're building, or what you're stuck on. I read every message and reply to the ones I can help with.</p>
+
+          <form class="contact__form" id="contactForm" novalidate>
+            <div class="field">
+              <input class="field__input" id="contactName" name="name" type="text" placeholder=" " autocomplete="name" />
+              <label class="field__label" data-reveal for="contactName">Name</label>
+              <span class="field__line" aria-hidden="true"></span>
+            </div>
+
+            <div class="field">
+              <input class="field__input" id="contactEmail" name="email" type="email" placeholder=" " autocomplete="email" />
+              <label class="field__label" data-reveal for="contactEmail">Email</label>
+              <span class="field__line" aria-hidden="true"></span>
+            </div>
+
+            <div class="field">
+              <input class="field__input" id="contactPhone" name="phone" type="tel" placeholder=" " autocomplete="tel" />
+              <label class="field__label" data-reveal for="contactPhone">Phone</label>
+              <span class="field__line" aria-hidden="true"></span>
+            </div>
+
+            <div class="field">
+              <textarea class="field__input field__input--area" id="contactMessage" name="message" rows="3" placeholder=" "></textarea>
+              <label class="field__label" data-reveal for="contactMessage">Message</label>
+              <span class="field__line" aria-hidden="true"></span>
+            </div>
+
+            <div class="contact__actions" data-reveal-block>
+              <button class="contact__submit" type="submit">Send</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <div class="panel__backdrop" aria-hidden="true"></div>
+
+      <video
+        class="about__video"
+        src="media/about-halftone.webm"
+        autoplay
+        loop
+        muted
+        playsinline
+        disablepictureinpicture
+        preload="auto"
+        aria-hidden="true"
+      ></video>
+
+      <!-- Footer -->
+      <footer class="footer" aria-label="Site footer">
+        <nav class="nav" aria-label="Sections">
+          <a class="nav__item is-active" href="./" data-nav="work">Work</a>
+          <a class="nav__item" href="#about" data-nav="about">About</a>
+          <a class="nav__item" href="#contact" data-nav="contact">Contact</a>
+        </nav>
+
+        <div class="scrubber" id="scrubber" role="slider" aria-label="Carousel scrubber" tabindex="0">
+          <div class="scrubber__track" id="scrubberTrack">
+            <!-- Tick marks rendered by JS -->
+          </div>
+          <div class="scrubber__caret" id="scrubberCaret" aria-hidden="true"></div>
+        </div>
+
+        <button class="location" id="location" type="button" aria-label="Toggle debug panel">Long Beach, California</button>
+      </footer>
+
+      <!-- Debug panel (toggled via the Long Beach label) -->
+      <aside class="debug" id="debug" aria-label="Debug panel" role="dialog">
+        <header class="debug__header">
+          <span class="debug__title">Debug</span>
+          <button class="debug__close" id="debugClose" type="button" aria-label="Close">×</button>
+        </header>
+        <nav class="debug__tabs" aria-label="Debug sections">
+          <button class="debug__tab is-active" type="button" data-debug-tab="motion">Motion</button>
+          <button class="debug__tab" type="button" data-debug-tab="theme">Theme</button>
+          <button class="debug__tab" type="button" data-debug-tab="gallery">Gallery</button>
+          <button class="debug__tab" type="button" data-debug-tab="about">About</button>
+        </nav>
+        <div class="debug__section is-active" id="debugMotionSection">
+          <div id="debugMotionControls"></div>
+          <dl class="debug__readout" id="debugReadout"></dl>
+        </div>
+        <div class="debug__section" id="debugThemeSection">
+          <div id="debugThemeControls"></div>
+        </div>
+        <div class="debug__section" id="debugGallerySection">
+          <div id="debugGalleryControls"></div>
+        </div>
+        <div class="debug__section" id="debugAboutSection">
+          <div id="debugAboutControls"></div>
+        </div>
+        <div class="debug__actions">
+          <button class="debug__btn" id="debugReset" type="button">Reset</button>
+          <button class="debug__btn" id="debugCopy" type="button">Copy</button>
+        </div>
+      </aside>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1269 @@
+/* ----------------------------------------------------------------
+   Fonts
+---------------------------------------------------------------- */
+@font-face {
+  font-family: "Monaspace Xenon";
+  src: url("fonts/MonaspaceXenon-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Monaspace Xenon";
+  src: url("fonts/MonaspaceXenon-Italic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: block;
+}
+@font-face {
+  font-family: "Monaspace Xenon";
+  src: url("fonts/MonaspaceXenon-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Monaspace Xenon";
+  src: url("fonts/MonaspaceXenon-BoldItalic.otf") format("opentype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: block;
+}
+@font-face {
+  font-family: "Monaspace Xenon";
+  src: url("fonts/MonaspaceXenon-ExtraLight.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Monaspace Xenon";
+  src: url("fonts/MonaspaceXenon-ExtraLightItalic.otf") format("opentype");
+  font-weight: 200;
+  font-style: italic;
+  font-display: block;
+}
+
+/* ----------------------------------------------------------------
+   Design tokens
+---------------------------------------------------------------- */
+:root {
+  --color-bg: #120C0B;
+  --color-accent: #C8DEC2;
+  --color-surface: rgba(255, 255, 255, 0.03);
+  --color-scrubber-dim: rgba(200, 222, 194, 0.4);
+  --color-writing-continue: #D23D2D;
+
+  --font-body: 11px;
+  --font-title: 32px;
+  --line-height-body: 1.5;
+  --line-height-title: 1.3;
+  --letter-spacing-body: 0.05em;
+  --letter-spacing-title: 0.05em;
+  --font-weight: 400;
+  --text-transform: uppercase;
+
+  --focused-size: 640px;
+  --thumb-size: 160px;
+  --item-gap: 24px;
+  --item-padding: 24px;
+
+  --tick-width: 1px;
+  --tick-gap: 8px;
+  --tick-max-height: 32px;
+
+  --easing: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* First load takes longer than a panel-return: arriving at the site is a
+     bigger moment than stepping back from About. Tunable in Debug > Gallery. */
+  --intro-stage-fade: 700ms;
+  --intro-stage-scale: 1150ms;
+
+  --chrome-pad: 24px;
+
+  --font-stack: "Monaspace Xenon", "Courier New", monospace;
+}
+
+/* ----------------------------------------------------------------
+   Reset / base
+---------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-bg);
+  color: var(--color-accent);
+  font-family: var(--font-stack);
+  font-weight: 400;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  letter-spacing: var(--letter-spacing-body);
+  font-weight: var(--font-weight);
+  text-transform: var(--text-transform);
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-transform: inherit;
+  letter-spacing: inherit;
+}
+
+img {
+  display: block;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* ----------------------------------------------------------------
+   Page layout
+---------------------------------------------------------------- */
+.page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ----------------------------------------------------------------
+   Header
+---------------------------------------------------------------- */
+.header {
+  position: fixed;
+  top: var(--chrome-pad);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 var(--chrome-pad);
+  pointer-events: none;
+}
+
+.header > * {
+  pointer-events: auto;
+}
+
+.site-name {
+  justify-self: start;
+  font-size: var(--font-body);
+  color: var(--color-accent);
+  letter-spacing: var(--letter-spacing-body);
+}
+
+.filters {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--color-accent);
+  border-radius: 2px;
+  opacity: 1;
+  transition: opacity 200ms var(--easing),
+              background-color 200ms var(--easing),
+              transform 200ms var(--easing);
+}
+
+.filter-btn:hover {
+  background-color: color-mix(in srgb, var(--color-accent) 8%, transparent);
+}
+
+.filter-btn.is-active {
+  background-color: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  transform: scale(1.05);
+}
+
+.filters.has-active .filter-btn:not(.is-active) {
+  opacity: 0.35;
+}
+
+.meta {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-size: var(--font-body);
+  letter-spacing: var(--letter-spacing-body);
+}
+
+.meta__date,
+.meta__time {
+  white-space: nowrap;
+}
+
+/* ----------------------------------------------------------------
+   Stage (carousel container)
+---------------------------------------------------------------- */
+.stage {
+  position: absolute;
+  inset: 0;
+  /* Above .panel__backdrop (3) but below the panels (5). The backdrop is
+     opaque and .page is not a stacking context, so at z-index auto the
+     backdrop faded in directly ON TOP of the gallery — the scale-out was
+     simply covered up instead of being seen. The stage reaches opacity 0 on
+     its own, so sitting above the backdrop costs nothing once it has gone. */
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.track {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translate3d(0, -50%, 0);
+  display: flex;
+  align-items: center;
+  height: var(--focused-size);
+  will-change: transform;
+}
+
+/* ----------------------------------------------------------------
+   About view
+
+   A full-page overlay that crossfades with the carousel. Colors and
+   type inherit the debug theme tokens (--color-bg, --color-accent,
+   --letter-spacing, --font-body, --font-title, --font-weight, --text-transform)
+   so the Theme tab tunes it live. Body text reveals line-by-line
+   through per-line masks.
+---------------------------------------------------------------- */
+.panel {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: transparent;
+  color: var(--color-accent);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 340ms var(--easing), transform 420ms var(--easing);
+}
+
+.panel.is-active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Exit phase: the panel stays opaque (Work hidden underneath) while the lines
+   mask back out, then Work is revealed once they've gone. */
+.panel.is-active.is-leaving {
+  pointer-events: none;
+}
+
+.panel__inner {
+  position: relative;
+  z-index: 1;
+  width: var(--about-column-width, 396px);
+  max-width: calc(100% - 48px);
+  margin: 0 auto;
+  padding: 144px 0 128px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.panel__lede {
+  display: block;
+  font-family: var(--font-stack);
+  font-weight: 200;
+  font-size: min(calc(var(--font-title) * var(--about-lede-scale, 1.5)), 12vw);
+  line-height: var(--line-height-title);
+  letter-spacing: var(--letter-spacing-title);
+  text-transform: var(--text-transform);
+  color: var(--color-accent);
+}
+
+/* Opaque backdrop shared by the reveal panels. A separate fixed layer (behind
+   the video and text) so the About video reads as "behind everything" while
+   still hiding the Work view underneath. */
+.panel__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  background: var(--color-bg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 340ms var(--easing);
+}
+
+
+.page--panel .panel__backdrop {
+  opacity: 1;
+}
+
+/* Pinned to the viewport's bottom-right, behind the About content. Lives
+   outside the panel (which is transformed + scrollable) so it stays fixed. */
+.about__video {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  width: 40vw;
+  max-width: 520px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 520ms var(--easing), transform 620ms var(--easing);
+}
+
+/* Hidden by default; the "Show About video" debug toggle re-enables it via
+   the .about-video-enabled class on <html>. */
+:root:not(.about-video-enabled) .about__video {
+  display: none;
+}
+
+.page--panel-about .about__video {
+  opacity: 1;
+  transform: none;
+}
+
+/* Hide again as soon as the About view starts closing. */
+.page--panel-about.page--panel-leaving .about__video {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.about__body {
+  font-size: var(--font-body);
+  line-height: var(--line-height-body);
+  text-align: justify;
+  color: var(--color-accent);
+}
+
+.about__point {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.35em;
+  row-gap: 8px;
+}
+
+.about__point-header {
+  display: contents;
+}
+
+.about__point-num {
+  grid-column: 1;
+  white-space: nowrap;
+  display: block;
+}
+
+.about__point-num .line {
+  display: block;
+}
+
+.about__point-title {
+  grid-column: 2;
+  margin: 0;
+}
+
+.about__point-detail {
+  grid-column: 2;
+  margin: 0;
+  padding-left: 0;
+}
+
+/* ----------------------------------------------------------------
+   Contact view
+---------------------------------------------------------------- */
+.contact__intro {
+  font-size: var(--font-body);
+  line-height: var(--line-height-body);
+  letter-spacing: var(--letter-spacing-body);
+  color: color-mix(in srgb, var(--color-accent) 78%, transparent);
+}
+
+.contact__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* The label's text masks/slides up on reveal like any other page text
+   (data-reveal). The baseline rule is a separate element that draws in
+   left-to-right instead of moving — the field itself never translates. */
+.field {
+  position: relative;
+}
+
+.field__input {
+  display: block;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-accent);
+  font-family: var(--font-stack);
+  font-size: var(--font-body);
+  line-height: var(--line-height-body);
+  letter-spacing: var(--letter-spacing-body);
+  padding: 22px 0 8px;
+  outline: none;
+}
+
+.field__input--area {
+  resize: none;
+  min-height: 3.4em;
+}
+
+.field__label {
+  position: absolute;
+  left: 0;
+  top: 22px;
+  color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+  font-family: var(--font-stack);
+  font-size: var(--font-body);
+  line-height: var(--line-height-body);
+  letter-spacing: var(--letter-spacing-body);
+  text-transform: var(--text-transform);
+  pointer-events: none;
+  transform-origin: left top;
+  transition: transform 220ms var(--easing), color 220ms var(--easing);
+}
+
+/* Shrink + move to top-left when the field is focused or has a value.
+   The empty placeholder (" ") makes :placeholder-shown reflect emptiness. */
+.field__input:focus + .field__label,
+.field__input:not(:placeholder-shown) + .field__label {
+  transform: translateY(-20px) scale(0.72);
+  color: var(--color-accent);
+}
+
+/* Baseline rule: drawn left-to-right on reveal via scaleX, independent of
+   the label's vertical mask slide. Brightens while the field has focus. */
+.field__line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: color-mix(in srgb, var(--color-accent) 32%, transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+  transition: transform var(--about-line-duration, 440ms)
+      var(--about-line-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    background-color 220ms var(--easing);
+  /* Staggered going in, synchronized going out — see .panel .line__inner. */
+  transition-delay: 0ms;
+}
+
+.panel.is-in .field__line {
+  transform: scaleX(1);
+  transition-delay: var(--reveal-delay, 0ms), 0ms;
+}
+
+.field:focus-within .field__line {
+  background: var(--color-accent);
+}
+
+.panel--no-anim .field__line {
+  transition: none !important;
+}
+
+.contact__actions {
+  margin-top: 12px;
+}
+
+.contact__submit {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-block;
+  border: 0;
+  border-bottom: 1px solid var(--color-writing-continue);
+  background: transparent;
+  color: var(--color-writing-continue);
+  font-family: var(--font-stack);
+  font-size: var(--font-body);
+  line-height: var(--line-height-body);
+  letter-spacing: var(--letter-spacing-body);
+  text-transform: var(--text-transform);
+  padding: 8px 2px;
+  cursor: pointer;
+  transition: opacity 220ms var(--easing);
+}
+
+.contact__submit:hover {
+  opacity: 0.7;
+}
+
+.contact__submit[disabled] {
+  cursor: default;
+  opacity: 0.5;
+}
+
+/* Line-by-line masked reveal ---------------------------------------
+   Not scoped to .panel: the same masks drive the page-chrome intro on
+   first load (see .page--intro-in below). An inner sits hidden until an
+   ancestor opts it in, so anything wrapped in a mask must be inside a
+   container that gets .is-in / .page--intro-in. */
+.line {
+  display: block;
+  overflow: hidden;
+  /* Keep descenders (g, y, p) from being clipped by the mask. */
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+.line__inner {
+  display: block;
+  transform: translateY(115%);
+  /* Each line slides on its own easing curve. "Reveal easing" sets the curve
+     (--about-line-ease), used for both the entrance and the exit; "Line
+     duration" the slide speed. The stagger only applies going in — exiting,
+     every line starts at once (delay 0, set on this base/exit-target rule;
+     CSS transitions use the delay from the state being transitioned TO). */
+  transition: transform var(--about-line-duration, 440ms)
+    var(--about-line-ease, cubic-bezier(0.16, 1, 0.3, 1));
+  transition-delay: 0ms;
+  will-change: transform;
+}
+
+/* Justify every line except the last of each paragraph, matching the
+   original flowed justification while each line lives in its own mask. */
+.about__body .line__inner {
+  text-align: justify;
+  text-align-last: justify;
+}
+
+/* Both selectors on purpose: the bare class must keep working for chrome text,
+   but it also has to OUTRANK `.about__body .line__inner` above (0,2,0) — at
+   (0,1,0) it lost, and every paragraph's short final line was being stretched
+   to the full column width. */
+.about__body .line__inner--last,
+.line__inner--last {
+  text-align-last: left;
+}
+
+.panel.is-in .line__inner,
+.page--intro-in .line__inner {
+  transform: translateY(0);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.panel--no-anim .line__inner {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .line__inner {
+    transition-duration: 200ms;
+  }
+  .line__inner {
+    transform: none !important;
+    transition: none !important;
+  }
+  .line {
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  .field__line {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* While About is open, retire the carousel chrome in unison. Work rests at
+   scale 1 and drops back to --work-rest-scale behind an open panel, so
+   returning to Work reads as the carousel pushing forward into place. */
+.stage {
+  transform-origin: center center;
+  transition: opacity 320ms var(--easing), transform 560ms var(--easing);
+}
+
+/* .page--intro is the same retracted state the carousel sits in behind an
+   open panel, so first load animates in through the exact Work-entry
+   transition rather than a second, parallel one. */
+.page--panel .stage,
+.page--intro .stage {
+  opacity: 0;
+  transform: scale(var(--work-rest-scale, 0.92));
+  pointer-events: none;
+}
+
+/* No transition override here on purpose: .page--panel .stage sets only the
+   target values, so `transition` cascades from .stage above and the exit runs
+   on exactly the same curve and timing as the entrance. */
+
+/* First load only. The reveal is a longer, more deliberate arrival than the
+   panel-return, and .page--intro-in is the state being transitioned TO, so
+   this governs the intro without touching either panel transition. */
+.page--intro-in .stage {
+  transition: opacity var(--intro-stage-fade) var(--easing),
+              transform var(--intro-stage-scale) var(--easing);
+}
+
+/* Filters and scrubber travel a short distance back into place as Work comes
+   forward, landing just after the carousel. The delay lives on this (visible)
+   rule so it only applies on the way IN — CSS transitions take their delay
+   from the state being transitioned TO, so leaving stays synchronised at 0ms,
+   matching how the panel's text lines behave. */
+.filters,
+.scrubber {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 320ms var(--easing), transform 520ms var(--easing);
+  transition-delay: 140ms;
+}
+
+.page--panel .filters,
+.page--panel .scrubber,
+.page--intro .filters,
+.page--intro .scrubber {
+  opacity: 0;
+  pointer-events: none;
+  transition-delay: 0ms;
+}
+
+/* First load: the chrome follows the carousel in on the same longer timing.
+   The 200ms lead is mirrored in playIntro's settle maths — keep them in step. */
+.page--intro-in .filters,
+.page--intro-in .scrubber {
+  transition: opacity var(--intro-stage-fade) var(--easing),
+              transform var(--intro-stage-scale) var(--easing);
+  transition-delay: 200ms;
+}
+
+/* Each retreats toward its own edge of the screen. */
+.page--panel .filters,
+.page--intro .filters {
+  transform: translateY(-12px);
+}
+
+.page--panel .scrubber,
+.page--intro .scrubber {
+  transform: translateY(14px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filters,
+  .scrubber {
+    transform: none !important;
+    transition: opacity 200ms var(--easing) !important;
+  }
+}
+
+/* ----------------------------------------------------------------
+   Items
+
+   Layout model:
+   - `.item` is the layout box. Its width/height is set inline by JS
+     (between thumbSize and focusedSize) plus constant padding.
+   - `.item__scale` is a fixed-size content box drawn at the design
+     size (focusedSize - 2*padding). JS sets `transform: scale(k)` so
+     the whole content (image, text, chrome) shrinks uniformly as the
+     outer box shrinks.
+   - Result: text, dots, browser chrome, all scale together — no
+     content jumping between thumb and focused states.
+---------------------------------------------------------------- */
+.item {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  min-width: 0;
+  min-height: 0;
+  background: transparent;
+  padding: var(--item-padding);
+  display: block;
+  cursor: pointer;
+  overflow: hidden;
+  will-change: width, height, opacity, margin-left;
+}
+
+.item.is-focused {
+  cursor: default;
+}
+
+.item__scale {
+  /* Design size = inner of the focused box (focusedSize - 2*padding). */
+  position: relative;
+  width: calc(var(--focused-size) - 2 * var(--item-padding));
+  height: calc(var(--focused-size) - 2 * var(--item-padding));
+  transform-origin: top left;
+  will-change: transform;
+}
+
+.item__inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Photo */
+.item--photo .item__inner {
+  overflow: hidden;
+}
+.item--photo .item__inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Web */
+.item--web .item__inner {
+  flex-direction: column;
+  align-items: stretch;
+  background: transparent;
+}
+
+.item--web .item__chrome {
+  display: flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  background: var(--color-surface);
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.item--web .dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.item--web .dot--red { background: #ff5f57; }
+.item--web .dot--yellow { background: #ffbd2e; }
+.item--web .dot--green { background: #28c840; }
+
+.item--web .item__content {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  overflow: hidden;
+  min-height: 0;
+}
+
+.item--web .item__content img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.item--web .item__placeholder {
+  font-size: var(--font-body);
+  color: var(--color-accent);
+  opacity: 0.6;
+  letter-spacing: var(--letter-spacing-body);
+  text-align: center;
+  padding: 8px;
+}
+
+/* Writing */
+.item--writing {
+  background: var(--color-surface);
+}
+
+.item--writing .item__inner {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 12px;
+  color: var(--color-accent);
+}
+
+.item--writing .item__meta {
+  font-size: var(--font-body);
+  opacity: 0.5;
+  letter-spacing: var(--letter-spacing-body);
+}
+
+.item--writing .item__title {
+  font-size: var(--font-title);
+  line-height: var(--line-height-title);
+  color: var(--color-accent);
+  letter-spacing: var(--letter-spacing-title);
+}
+
+.item--writing .item__body {
+  font-size: var(--font-body);
+  line-height: var(--line-height-body);
+  color: var(--color-accent);
+  opacity: 0.85;
+  letter-spacing: var(--letter-spacing-body);
+}
+
+.item--writing .item__continue {
+  margin-top: auto;
+  font-size: var(--font-body);
+  letter-spacing: var(--letter-spacing-body);
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  opacity: 0.9;
+  color: var(--color-writing-continue);
+}
+
+/* ----------------------------------------------------------------
+   Footer
+---------------------------------------------------------------- */
+.footer {
+  position: fixed;
+  bottom: var(--chrome-pad);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: end;
+  padding: 0 var(--chrome-pad);
+  pointer-events: none;
+}
+
+.footer > * {
+  pointer-events: auto;
+}
+
+.nav {
+  justify-self: start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.nav__item {
+  font-size: var(--font-body);
+  letter-spacing: var(--letter-spacing-body);
+  color: var(--color-accent);
+  opacity: 0.4;
+  transition: opacity 200ms var(--easing);
+}
+
+.nav__item.is-active {
+  opacity: 1;
+}
+
+.location {
+  justify-self: end;
+  align-self: end;
+  font-size: var(--font-body);
+  letter-spacing: var(--letter-spacing-body);
+  color: var(--color-accent);
+  cursor: pointer;
+  user-select: none;
+}
+
+.location:hover {
+  opacity: 0.75;
+}
+
+/* ----------------------------------------------------------------
+   Debug panel
+---------------------------------------------------------------- */
+.debug {
+  position: fixed;
+  top: 64px;
+  right: 16px;
+  z-index: 50;
+  width: 320px;
+  max-height: calc(100dvh - 128px);
+  overflow-y: auto;
+  /* The page itself never scrolls, so keep the panel's own scroll from
+     chaining out to it, and opt back in to touch scrolling (body sets
+     touch-action: none for the carousel's gesture handling). */
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.92);
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  font-family: var(--font-stack);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  text-transform: none;
+  display: none;
+  pointer-events: auto;
+}
+
+.debug.is-open {
+  display: block;
+}
+
+.debug__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+
+.debug__tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.debug__tab {
+  flex: 1 1 0;
+  padding: 6px 8px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+  background: transparent;
+  color: var(--color-accent);
+  font-family: var(--font-stack);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0.55;
+}
+
+.debug__tab.is-active {
+  opacity: 1;
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+
+.debug__section {
+  display: none;
+}
+
+.debug__section.is-active {
+  display: block;
+}
+
+.debug__section-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.65;
+  margin: 12px 0 8px;
+}
+
+.debug__section-title:first-child {
+  margin-top: 0;
+}
+
+.debug__mode-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.debug__mode-btn {
+  flex: 1 1 0;
+  padding: 8px 6px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+  background: transparent;
+  color: var(--color-accent);
+  font-family: var(--font-stack);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0.55;
+}
+
+.debug__mode-btn.is-active {
+  opacity: 1;
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+
+.debug__title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.debug__close {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-accent);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.debug__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.debug__row label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+
+.debug__row .debug__value {
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  min-width: 56px;
+  text-align: right;
+}
+
+.debug__row input[type="checkbox"] {
+  grid-column: 2;
+  justify-self: end;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-accent);
+}
+
+.debug__row input[type="range"] {
+  grid-column: 1 / -1;
+  width: 100%;
+  accent-color: var(--color-accent);
+  background: transparent;
+}
+
+.debug__row input[type="color"] {
+  grid-column: 1 / -1;
+  width: 100%;
+  height: 28px;
+  padding: 2px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+  background: transparent;
+  cursor: pointer;
+}
+
+.debug__select {
+  grid-column: 1 / -1;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+  background: transparent;
+  color: var(--color-accent);
+  font-family: var(--font-stack);
+  font-size: var(--font-body);
+  letter-spacing: var(--letter-spacing-body);
+  cursor: pointer;
+}
+
+.debug__select option {
+  background: var(--color-bg);
+  color: var(--color-accent);
+}
+
+.debug__readout {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+}
+
+.debug__readout dt {
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.debug__readout dd {
+  text-align: right;
+}
+
+.debug__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.debug__btn {
+  flex: 1 1 auto;
+  padding: 6px 10px;
+  border: 1px solid var(--color-accent);
+  background: transparent;
+  color: var(--color-accent);
+  font-family: var(--font-stack);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.debug__btn:hover {
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+
+/* ----------------------------------------------------------------
+   Scrubber
+---------------------------------------------------------------- */
+.scrubber {
+  justify-self: center;
+  align-self: end;
+  height: 40px;
+  position: relative;
+  cursor: ew-resize;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 4px;
+  touch-action: none;
+}
+
+.scrubber__track {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--tick-gap);
+  height: var(--tick-max-height);
+}
+
+.tick {
+  position: relative;
+  flex: 0 0 var(--tick-width);
+  width: var(--tick-width);
+  height: 16px;
+  background: var(--color-accent);
+  opacity: 0.5;
+  padding: 0;
+  /* Height/opacity transitions apply only when the carousel is idle
+     (smooth hover + settle). While the carousel is moving, the
+     `--live` modifier disables them so the ticks track the scroll
+     position directly without lag. */
+  transition:
+    height 160ms var(--easing),
+    opacity 160ms var(--easing),
+    background-color 300ms var(--easing);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* Invisible hit area: extends each tick by half the gap on both sides so
+   the touch targets tile edge-to-edge (no dead zones between thin lines),
+   and vertically for easier hovering. The visible 1px line is unchanged. */
+.tick::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  bottom: -10px;
+  /* Half the gap on each side, so the hit areas meet exactly with no dead
+     zones between the thin lines — tracks --tick-gap when it is tuned. */
+  left: calc(var(--tick-gap) / -2);
+  right: calc(var(--tick-gap) / -2);
+}
+
+.scrubber__track--live .tick {
+  transition: background-color 300ms var(--easing);
+}
+
+.tick.is-dim {
+  background: var(--color-scrubber-dim);
+  cursor: default;
+}
+
+.scrubber__caret {
+  display: none;
+}
+
+/* ----------------------------------------------------------------
+   Mobile
+---------------------------------------------------------------- */
+@media (max-width: 768px) {
+  :root {
+    --focused-size: min(80vw, 340px);
+    --thumb-size: min(22vw, 100px);
+    --item-padding: 16px;
+    --chrome-pad: 16px;
+  }
+
+  .header,
+  .footer {
+    padding: 0 var(--chrome-pad);
+  }
+
+  .site-name,
+  .nav__item,
+  .meta,
+  .location {
+    font-size: var(--font-body);
+  }
+
+  .filter-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .item--web .item__chrome {
+    height: 18px;
+  }
+
+  .panel__inner {
+    padding: 104px 0 104px;
+    gap: 24px;
+  }
+
+  .about__video {
+    width: 62vw;
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 400px) {
+  .location {
+    display: none;
+  }
+  .meta__date {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrubber__caret,
+  .tick,
+  .nav__item,
+  .filter-btn {
+    transition-duration: 0ms !important;
+  }
+}

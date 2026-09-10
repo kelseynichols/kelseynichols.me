@@ -535,6 +535,65 @@ img {
   opacity: 0.5;
 }
 
+/* ----------------------------------------------------------------
+   Reading view (full writing piece — opened by "Continue →")
+   Shares the .panel machinery; only its own type styles live here.
+---------------------------------------------------------------- */
+.reading__back {
+  appearance: none;
+  -webkit-appearance: none;
+  align-self: flex-start;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-stack);
+  font-size: var(--font-body);
+  line-height: var(--line-height-body);
+  letter-spacing: var(--letter-spacing-body);
+  text-transform: var(--text-transform);
+  color: var(--color-accent);
+  opacity: 0.55;
+  transition: opacity 200ms var(--easing);
+}
+
+.reading__back:hover,
+.reading__back:focus-visible {
+  opacity: 1;
+  outline: none;
+}
+
+.reading__back-arrow {
+  display: inline-block;
+  transition: transform 220ms var(--easing);
+}
+
+.reading__back:hover .reading__back-arrow,
+.reading__back:focus-visible .reading__back-arrow {
+  transform: translateX(-4px);
+}
+
+.reading__meta {
+  font-size: var(--font-body);
+  letter-spacing: var(--letter-spacing-body);
+  text-transform: var(--text-transform);
+  opacity: 0.5;
+}
+
+.reading__body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.reading__para {
+  margin: 0;
+  font-size: var(--font-body);
+  line-height: var(--line-height-body);
+  text-align: justify;
+  color: var(--color-accent);
+}
+
 /* Line-by-line masked reveal ---------------------------------------
    Not scoped to .panel: the same masks drive the page-chrome intro on
    first load (see .page--intro-in below). An inner sits hidden until an
@@ -842,6 +901,27 @@ img {
   width: 100%;
   opacity: 0.9;
   color: var(--color-writing-continue);
+}
+
+/* When wired to a full piece, the row reads as a link and its arrow nudges. */
+.item--writing .item__continue--link {
+  cursor: pointer;
+  transition: opacity 200ms var(--easing);
+}
+
+.item--writing .item__continue--link:hover,
+.item--writing .item__continue--link:focus-visible {
+  opacity: 1;
+  outline: none;
+}
+
+.item__continue-arrow {
+  transition: transform 220ms var(--easing);
+}
+
+.item--writing .item__continue--link:hover .item__continue-arrow,
+.item--writing .item__continue--link:focus-visible .item__continue-arrow {
+  transform: translateX(4px);
 }
 
 /* ----------------------------------------------------------------

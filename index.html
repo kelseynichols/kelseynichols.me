@@ -129,6 +129,18 @@
         </div>
       </section>
 
+      <!-- Reading (full writing piece — opened by "Continue →") -->
+      <section class="reading panel" id="reading" aria-label="Reading" aria-hidden="true">
+        <div class="reading__inner panel__inner">
+          <button class="reading__back" id="readingBack" type="button" data-reveal-block aria-label="Back to work">
+            <span class="reading__back-arrow" aria-hidden="true">←</span> Back
+          </button>
+          <div class="reading__meta" id="readingMeta" data-reveal></div>
+          <h1 class="reading__lede panel__lede" id="readingTitle" data-reveal></h1>
+          <div class="reading__body" id="readingBody"><!-- paragraphs injected by JS --></div>
+        </div>
+      </section>
+
       <div class="panel__backdrop" aria-hidden="true"></div>
 
       <video

@@ -20,9 +20,16 @@
     { type: "photo", src: "media/photos/white-temple.png",  alt: "Ornate white temple architecture against clouds." },
     {
       type: "writing",
+      slug: "helen-park",
       meta: "April 2025",
       title: "Lorem Ipsum Dolor Sit Amet.",
       body: "Curabitur in nulla a ipsum laoreet imperdiet. Proin semper egestas gravida. Integer id risus ex. In id fermentum tortor. Integer volutpat magna eu purus porttitor porta id eu nibh.",
+      full: [
+        "Curabitur in nulla a ipsum laoreet imperdiet. Proin semper egestas gravida. Integer id risus ex. In id fermentum tortor. Integer volutpat magna eu purus porttitor porta id eu nibh. Sed euismod, nunc sit amet aliquam lacinia, nisl nisl aliquet nisl, nec aliquam nisl nisl sit amet nisl.",
+        "Aenean lacinia, magna ut posuere consectetur, leo nibh dignissim odio, ac volutpat lectus odio at urna. Maecenas convallis, lacus eget porta congue, nibh velit varius elit, quis tincidunt sem sapien vitae nunc. Donec feugiat quam a venenatis aliquam.",
+        "Integer aliquet condimentum eros, vel lobortis sapien pharetra eu. Suspendisse potenti. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. This is placeholder body copy standing in for the full piece.",
+        "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nam at tortor in tellus interdum sagittis. The real essay lands here — this view is only demonstrating how reading a full piece feels.",
+      ],
     },
     { type: "photo", src: "media/photos/rocking-chairs-portrait.png", alt: "Two women sitting together on white rocking chairs." },
     { type: "photo", src: "media/photos/badlands.png", alt: "Figure standing amid the eroded ridges of the Badlands." },
@@ -33,9 +40,15 @@
     { type: "photo", src: "media/photos/iceberg.png", alt: "Sculpted blue iceberg floating in still water." },
     {
       type: "writing",
+      slug: "quiet-mornings",
       meta: "March 2025",
       title: "Quiet Mornings In Long Beach.",
       body: "Aenean lacinia, magna ut posuere consectetur, leo nibh dignissim odio, ac volutpat lectus odio at urna. Maecenas convallis, lacus eget porta congue, nibh velit varius elit.",
+      full: [
+        "Aenean lacinia, magna ut posuere consectetur, leo nibh dignissim odio, ac volutpat lectus odio at urna. Maecenas convallis, lacus eget porta congue, nibh velit varius elit, quis tincidunt sem sapien vitae nunc.",
+        "Donec feugiat quam a venenatis aliquam. Integer aliquet condimentum eros, vel lobortis sapien pharetra eu. The morning light in Long Beach does something specific to the color of everything — this is where that observation would live.",
+        "Suspendisse potenti. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Placeholder text, standing in for the full piece.",
+      ],
     },
     { type: "photo", src: "media/photos/laundromat.png", alt: "Rows of washers and dryers lit by warm evening light." },
     { type: "photo", src: "media/photos/kyoto-pagoda.png", alt: "A woman with a red umbrella on a Kyoto street, pagoda behind." },
@@ -46,9 +59,15 @@
     { type: "photo", src: "media/photos/lake-backflip.png", alt: "A diver backflipping off a platform into a lake." },
     {
       type: "writing",
+      slug: "notes-on-light",
       meta: "February 2025",
       title: "Notes On Light And Color.",
       body: "Donec feugiat quam a venenatis aliquam. Integer aliquet condimentum eros, vel lobortis sapien pharetra eu. Suspendisse potenti. Pellentesque habitant morbi tristique senectus.",
+      full: [
+        "Donec feugiat quam a venenatis aliquam. Integer aliquet condimentum eros, vel lobortis sapien pharetra eu. Suspendisse potenti. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+        "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae. Shooting film teaches you to see color as something you wait for rather than something you fix later — the full note picks that up here.",
+        "Nam at tortor in tellus interdum sagittis. Placeholder body copy standing in for the full piece so the reading flow can be felt end to end.",
+      ],
     },
     { type: "photo", src: "media/photos/garden-bench.png", alt: "Three people reading on a bench along a garden boardwalk." },
     { type: "photo", src: "media/photos/brick-balconies.png", alt: "Brick apartment facade with residents on their balconies." },
@@ -300,10 +319,29 @@
         const left = document.createElement("span");
         left.textContent = "Continue";
         const right = document.createElement("span");
+        right.className = "item__continue-arrow";
         right.textContent = "\u2192";
         cont.appendChild(left);
         cont.appendChild(right);
         inner.appendChild(cont);
+
+        // "Continue \u2192" opens the full piece in the reading panel. Only wired
+        // when the item has a slug + full body to show.
+        if (item.slug && Array.isArray(item.full) && item.full.length) {
+          cont.classList.add("item__continue--link");
+          cont.setAttribute("role", "link");
+          cont.setAttribute("tabindex", "0");
+          cont.setAttribute("aria-label", `Continue reading: ${item.title || ""}`.trim());
+          const open = (e) => {
+            e.stopPropagation();      // don't let the card's re-center click fire
+            e.preventDefault();
+            openReading(item.slug);
+          };
+          cont.addEventListener("click", open);
+          cont.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") open(e);
+          });
+        }
       }
 
       scale.appendChild(inner);
@@ -1916,8 +1954,56 @@
   }
 
   const contactEl = document.getElementById("contact");
+  const readingEl = document.getElementById("reading");
   const aboutPanel = makePanel(aboutEl, "about");
   const contactPanel = makePanel(contactEl, "contact");
+  const readingPanel = makePanel(readingEl, "reading");
+
+  /* ----------------------------------------------------------------
+     Reading view — full writing pieces, opened by "Continue →".
+     Reuses the same panel + line-reveal + hash-routing machinery as
+     About/Contact; the only extra is a per-piece slug in the URL.
+  ---------------------------------------------------------------- */
+  // slug -> writing item, built from ITEMS so content lives in one place.
+  const WRITING = {};
+  ITEMS.forEach((it) => {
+    if (it.type === "writing" && it.slug) WRITING[it.slug] = it;
+  });
+
+  const readingMetaEl = document.getElementById("readingMeta");
+  const readingTitleEl = document.getElementById("readingTitle");
+  const readingBodyEl = document.getElementById("readingBody");
+
+  // Populate the reading panel's DOM for a slug. Must run BEFORE the panel
+  // opens, so setupPanelReveal (called on open) splits the fresh paragraphs.
+  function setReadingContent(slug) {
+    const item = WRITING[slug];
+    if (!item || !readingEl) return false;
+    // splitLines() caches text in dataset.text on first run; these reused
+    // elements start empty, so clear the cache before repopulating or the
+    // reveal will replay the stale (empty) text.
+    readingMetaEl.textContent = item.meta || "";
+    delete readingMetaEl.dataset.text;
+    readingTitleEl.textContent = item.title || "";
+    delete readingTitleEl.dataset.text;
+    readingBodyEl.innerHTML = "";
+    (item.full || [item.body || ""]).forEach((para) => {
+      const p = document.createElement("p");
+      p.className = "reading__para";
+      p.setAttribute("data-reveal", "");
+      p.textContent = para;
+      readingBodyEl.appendChild(p);
+    });
+    readingEl.dataset.slug = slug;
+    return true;
+  }
+
+  // Open a piece: set content, write the URL, play the reveal.
+  function openReading(slug) {
+    if (!setReadingContent(slug)) return;
+    writeReadingRoute(slug);
+    navTo("reading", { updateUrl: false });
+  }
 
   // Re-split every panel (line breaks depend on width/fonts) and restore its
   // current reveal state without animating.
@@ -2051,12 +2137,22 @@
     contact: "Kelsey Nichols — Contact",
   };
 
-  function routeFromHash() {
+  // Parse the fragment into { name, slug }. Reading pieces use a two-part
+  // fragment (#read/<slug>); everything else is a single-token panel name.
+  function parseHash() {
     const h = (location.hash || "").replace(/^#\/?/, "").toLowerCase();
-    return PANEL_ROUTES.includes(h) ? h : "work";
+    if (h.startsWith("read/")) {
+      const slug = h.slice("read/".length);
+      if (WRITING[slug]) return { name: "reading", slug };
+    }
+    return { name: PANEL_ROUTES.includes(h) ? h : "work" };
   }
 
-  function setRouteTitle(name) {
+  function setRouteTitle(name, slug) {
+    if (name === "reading" && slug && WRITING[slug]) {
+      document.title = `Kelsey Nichols — ${(WRITING[slug].title || "").replace(/\.$/, "")}`;
+      return;
+    }
     document.title = ROUTE_TITLES[name] || ROUTE_TITLES.work;
   }
 
@@ -2073,13 +2169,27 @@
     }
   }
 
+  // Same as writeRoute but for a reading piece's two-part fragment.
+  function writeReadingRoute(slug, replace) {
+    const base = location.pathname + location.search;
+    const url = `${base}#read/${slug}`;
+    setRouteTitle("reading", slug);
+    if (!replace && new URL(url, location.href).href === location.href) return;
+    try {
+      history[replace ? "replaceState" : "pushState"](null, "", url);
+    } catch (err) {
+      // Some origins reject history writes; the view still navigates fine.
+    }
+  }
+
   // Back/forward and hand-edited URLs both land here. popstate covers the
   // pushState entries, hashchange covers a fragment typed into the address bar
   // — navTo is idempotent so both firing for one change is harmless.
   function syncFromUrl() {
-    const name = routeFromHash();
-    setRouteTitle(name);
-    navTo(name, { updateUrl: false });
+    const r = parseHash();
+    setRouteTitle(r.name, r.slug);
+    if (r.name === "reading") setReadingContent(r.slug);
+    navTo(r.name, { updateUrl: false });
   }
 
   // Single entry point for navigation. `name` is "work" (or "home") or a
@@ -2126,10 +2236,12 @@
   }
 
   function updateNavActive(section) {
+    // Reading is a sub-view of Work — keep Work highlighted while it's open.
+    const active = section === "reading" ? "work" : section;
     navItems.forEach((a) => {
       const nav = a.dataset.nav;
       if (nav === "about" || nav === "work" || nav === "contact") {
-        a.classList.toggle("is-active", nav === section);
+        a.classList.toggle("is-active", nav === active);
       }
     });
   }
@@ -2198,6 +2310,12 @@
 
     setupContactForm();
 
+    // "← Back" in the reading panel returns to Work (same as Esc / the Work nav).
+    if (readingEl) {
+      const backBtn = document.getElementById("readingBack");
+      if (backBtn) backBtn.addEventListener("click", () => navTo("work"));
+    }
+
     buildItems();
     buildScrubber();
     readSizes();
@@ -2263,12 +2381,17 @@
     window.addEventListener("popstate", syncFromUrl);
     window.addEventListener("hashchange", syncFromUrl);
 
-    const initialRoute = routeFromHash();
+    const initial = parseHash();
     // Canonicalise the URL (drop junk fragments, normalise case) in place,
     // without adding a history entry.
-    writeRoute(initialRoute, true);
+    if (initial.name === "reading") {
+      setReadingContent(initial.slug);
+      writeReadingRoute(initial.slug, true);
+    } else {
+      writeRoute(initial.name, true);
+    }
 
-    if (initialRoute === "work") {
+    if (initial.name === "work") {
       playIntro();
     } else {
       // Deep-linked straight into a panel. Skip the gallery intro entirely and
@@ -2276,7 +2399,7 @@
       // it and animates in normally when the user navigates back.
       introPlayed = true;
       finishIntro([]);
-      navTo(initialRoute, { updateUrl: false });
+      navTo(initial.name, { updateUrl: false });
     }
 
     if (document.fonts && document.fonts.ready) {

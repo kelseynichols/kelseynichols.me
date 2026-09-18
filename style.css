@@ -330,6 +330,11 @@ img {
   opacity: 1;
 }
 
+.page--panel-reading .panel__backdrop {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
 /* Pinned to the viewport's bottom-right, behind the About content. Lives
    outside the panel (which is transformed + scrollable) so it stays fixed. */
 .about__video {
@@ -578,13 +583,6 @@ img {
   letter-spacing: var(--letter-spacing-body);
   text-transform: var(--text-transform);
   opacity: 0.5;
-}
-
-.reading__bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  cursor: pointer;
 }
 
 .reading .panel__inner {

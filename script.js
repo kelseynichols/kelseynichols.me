@@ -2319,11 +2319,8 @@
     if (readingEl) {
       const backBtn = document.getElementById("readingBack");
       if (backBtn) backBtn.addEventListener("click", () => navTo("work"));
-      // Clicking outside the reading content (on the panel background) closes it.
-      readingEl.addEventListener("click", (e) => {
-        if (activePanel !== readingPanel) return;
-        if (!e.target.closest(".panel__inner")) navTo("work");
-      });
+      const readingBg = document.getElementById("readingBg");
+      if (readingBg) readingBg.addEventListener("click", () => navTo("work"));
     }
 
     buildItems();

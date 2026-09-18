@@ -580,6 +580,13 @@ img {
   opacity: 0.5;
 }
 
+.reading__bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  cursor: pointer;
+}
+
 .reading .panel__inner {
   width: min(640px, calc(100% - 48px));
 }

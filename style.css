@@ -580,6 +580,10 @@ img {
   opacity: 0.5;
 }
 
+.reading .panel__inner {
+  width: min(640px, calc(100% - 48px));
+}
+
 .reading__body {
   display: flex;
   flex-direction: column;

@@ -2321,11 +2321,6 @@
       if (backBtn) backBtn.addEventListener("click", () => navTo("work"));
     }
 
-    // Clicking the backdrop while reading is open closes it.
-    const backdropEl = document.querySelector(".panel__backdrop");
-    if (backdropEl) backdropEl.addEventListener("click", () => {
-      if (activePanel === readingPanel) navTo("work");
-    });
 
     buildItems();
     buildScrubber();

@@ -1563,17 +1563,13 @@
       .join("");
   }
 
-  const debugOverlayEl = document.getElementById("debugOverlay");
-
   function openDebug() {
     debugEl.classList.add("is-open");
-    if (debugOverlayEl) debugOverlayEl.classList.add("is-open");
     syncDebugInputs();
     updateDebugReadout();
   }
   function closeDebug() {
     debugEl.classList.remove("is-open");
-    if (debugOverlayEl) debugOverlayEl.classList.remove("is-open");
   }
   function toggleDebug() {
     if (debugEl.classList.contains("is-open")) closeDebug();
@@ -2378,7 +2374,10 @@
       debugTabs.forEach((btn) => {
         btn.addEventListener("click", () => setDebugTab(btn.dataset.debugTab));
       });
-      if (debugOverlayEl) debugOverlayEl.addEventListener("click", closeDebug);
+      window.addEventListener("pointerdown", (e) => {
+        if (!debugEl.classList.contains("is-open")) return;
+        if (!debugEl.contains(e.target) && !locationEl.contains(e.target)) closeDebug();
+      }, true);
     }
 
     let resizeRaf = null;

@@ -985,17 +985,6 @@ img {
 /* ----------------------------------------------------------------
    Debug panel
 ---------------------------------------------------------------- */
-.debug-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 49;
-}
-
-.debug-overlay.is-open {
-  display: block;
-}
-
 .debug {
   position: fixed;
   top: 64px;

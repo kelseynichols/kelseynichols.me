@@ -2379,6 +2379,10 @@
       debugTabs.forEach((btn) => {
         btn.addEventListener("click", () => setDebugTab(btn.dataset.debugTab));
       });
+      document.addEventListener("mousedown", (e) => {
+        if (!debugEl.classList.contains("is-open")) return;
+        if (!debugEl.contains(e.target) && e.target !== locationEl) closeDebug();
+      });
     }
 
     let resizeRaf = null;

@@ -227,7 +227,7 @@ img {
 ---------------------------------------------------------------- */
 .stage {
   position: absolute;
-  inset: 0;
+  inset: 0 0 calc(var(--chrome-pad) + 44px) 0;
   /* Above .panel__backdrop (3) but below the panels (5). The backdrop is
      opaque and .page is not a stacking context, so at z-index auto the
      backdrop faded in directly ON TOP of the gallery — the scale-out was

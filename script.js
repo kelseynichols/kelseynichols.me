@@ -352,7 +352,12 @@
         const v = itemIndexToVisibleIndex(i);
         if (v < 0) return;
         const cur = Math.round(offset);
-        if (v === cur) return;
+        if (v === cur) {
+          if (item.type === "writing" && item.slug && Array.isArray(item.full) && item.full.length) {
+            openReading(item.slug);
+          }
+          return;
+        }
         animateOffsetTo(v);
       });
 
@@ -2304,7 +2309,7 @@
         e.preventDefault();
         const nav = a.dataset.nav;
         if (nav === "about" || nav === "contact") navTo(nav);
-        else if (nav === "work" || nav === "home") navTo("work");
+        else if (nav === "work" || nav === "home") { applyFilter(null); animateOffsetTo(0, CONFIG.filterOffsetMs); navTo("work"); }
       });
     });
 

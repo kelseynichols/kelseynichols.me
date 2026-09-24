@@ -15,3 +15,9 @@
 # Local planning doc — kept out of the repo intentionally
 ROADMAP.md
 NOTES.md
+
+# Generated route pages (built by scripts/generate-routes.mjs in CI, and
+# locally when testing routes — never committed)
+/about/
+/contact/
+/read/

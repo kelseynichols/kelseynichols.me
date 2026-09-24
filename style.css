@@ -301,7 +301,7 @@ img {
 .panel__inner {
   position: relative;
   z-index: 1;
-  width: var(--about-column-width, 440px);
+  width: var(--about-column-width, 470px);
   max-width: calc(100% - 48px);
   margin: 0 auto;
   padding: 96px 0 88px;

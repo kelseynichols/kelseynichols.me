@@ -131,7 +131,7 @@
     textTransform: "uppercase",
     // About page
     aboutLedeScale: 1.5,    // multiplier on fontTitle
-    aboutColumnWidth: 440,  // px
+    aboutColumnWidth: 470,  // px
     aboutRevealStagger: 15,    // ms between consecutive lines
     aboutHeaderStaggerMult: 2, // header (lede) lines stagger this much more
     aboutLineDurationMs: 600,  // per-line slide duration (identical for entrance + exit)
@@ -2149,10 +2149,10 @@
 
      About and Contact get their own URLs while keeping the in-page
      transition: navigating never reloads, it just rewrites the URL and plays
-     the same reveal. Hash fragments rather than clean paths (/about) on
-     purpose — this is a static site with no server rewrites, so #about is the
-     only form that survives a refresh or a shared link anywhere it is hosted,
-     file:// included.
+     the same reveal. Clean paths (/about/, /read/<slug>/) rather than #hash:
+     a build step (scripts/generate-routes.mjs, run in CI) emits a real
+     index.html for each route, so a refresh or shared link loads directly —
+     no server rewrites needed. <base href="/"> keeps assets resolving.
   ---------------------------------------------------------------- */
   const PANEL_ROUTES = ["about", "contact"];
 
@@ -2162,15 +2162,16 @@
     contact: "Kelsey Nichols — Contact",
   };
 
-  // Parse the fragment into { name, slug }. Reading pieces use a two-part
-  // fragment (#read/<slug>); everything else is a single-token panel name.
-  function parseHash() {
-    const h = (location.hash || "").replace(/^#\/?/, "").toLowerCase();
-    if (h.startsWith("read/")) {
-      const slug = h.slice("read/".length);
+  // Parse the pathname into { name, slug }. Reading pieces are a two-part
+  // path (/read/<slug>/); everything else is a single-token panel name.
+  // Leading/trailing slashes are stripped so "/about" and "/about/" both work.
+  function parsePath() {
+    const p = location.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
+    if (p.startsWith("read/")) {
+      const slug = p.slice("read/".length).replace(/\/+$/, "");
       if (WRITING[slug]) return { name: "reading", slug };
     }
-    return { name: PANEL_ROUTES.includes(h) ? h : "work" };
+    return { name: PANEL_ROUTES.includes(p) ? p : "work" };
   }
 
   function setRouteTitle(name, slug) {
@@ -2182,8 +2183,9 @@
   }
 
   function writeRoute(name, replace) {
-    const base = location.pathname + location.search;
-    const url = name === "work" ? base : `${base}#${name}`;
+    // Trailing slash matches the generated directory pages, so a refresh
+    // hits /about/index.html directly with no host-side redirect.
+    const url = name === "work" ? "/" : `/${name}/`;
     setRouteTitle(name);
     // Don't stack identical entries (Escape pressed twice on Work, say).
     if (!replace && new URL(url, location.href).href === location.href) return;
@@ -2194,10 +2196,9 @@
     }
   }
 
-  // Same as writeRoute but for a reading piece's two-part fragment.
+  // Same as writeRoute but for a reading piece's two-part path.
   function writeReadingRoute(slug, replace) {
-    const base = location.pathname + location.search;
-    const url = `${base}#read/${slug}`;
+    const url = `/read/${slug}/`;
     setRouteTitle("reading", slug);
     if (!replace && new URL(url, location.href).href === location.href) return;
     try {
@@ -2207,11 +2208,10 @@
     }
   }
 
-  // Back/forward and hand-edited URLs both land here. popstate covers the
-  // pushState entries, hashchange covers a fragment typed into the address bar
-  // — navTo is idempotent so both firing for one change is harmless.
+  // Back/forward land here via popstate. navTo is idempotent, so re-syncing
+  // to a URL the view already matches is harmless.
   function syncFromUrl() {
-    const r = parseHash();
+    const r = parsePath();
     setRouteTitle(r.name, r.slug);
     if (r.name === "reading") setReadingContent(r.slug);
     navTo(r.name, { updateUrl: false });
@@ -2409,9 +2409,8 @@
     });
 
     window.addEventListener("popstate", syncFromUrl);
-    window.addEventListener("hashchange", syncFromUrl);
 
-    const initial = parseHash();
+    const initial = parsePath();
     // Canonicalise the URL (drop junk fragments, normalise case) in place,
     // without adding a history entry.
     if (initial.name === "reading") {

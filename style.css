@@ -1356,6 +1356,12 @@ img {
     font-size: var(--font-body);
   }
 
+  /* Stack the wordmark: Kelsey on top, Nichols below. Inline on desktop. */
+  .site-name__part {
+    display: block;
+    line-height: 1.2;
+  }
+
   .filter-btn {
     width: 44px;
     height: 44px;

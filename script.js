@@ -105,6 +105,9 @@
     // Item focus dimming (distance from center → opacity)
     itemMinOpacity: 0.05,
     itemOpacityFalloff: 2.0,
+    // Haptics (Vibration API — Android only; iOS Safari & desktop no-op)
+    haptics: true,
+    hapticMs: 6,             // pulse length per photo boundary crossed
   };
 
   const CONFIG = { ...DEFAULTS };
@@ -220,6 +223,7 @@
   let snapStartTime = 0;
   let snapStartOffset = 0;
   let lastInputTime = 0;
+  let lastHapticIdx = null;   // rounded offset at last haptic tick
 
   // Per-item state
   const itemNodes = [];      // .item elements
@@ -688,6 +692,16 @@
 
     render();
 
+    // Haptic tick each time the focused photo changes during live motion.
+    // No-ops where the Vibration API is unsupported (iOS Safari, desktop).
+    if (needsContinue || scrubbing) {
+      const focusIdx = Math.round(offset);
+      if (lastHapticIdx !== null && focusIdx !== lastHapticIdx) fireHaptic();
+      lastHapticIdx = focusIdx;
+    } else {
+      lastHapticIdx = null;
+    }
+
     // "Live" = offset is changing rapidly (scroll/snap motion or active
     // scrubbing). While live, disable tick height/opacity CSS transitions
     // so the scrubber tracks scroll directly; when idle, transitions give
@@ -699,6 +713,12 @@
     } else {
       rafId = null;
     }
+  }
+
+  const canVibrate = typeof navigator !== "undefined" && typeof navigator.vibrate === "function";
+  function fireHaptic() {
+    if (!CONFIG.haptics || !canVibrate) return;
+    navigator.vibrate(CONFIG.hapticMs);
   }
 
   function animateOffsetTo(targetVisIdx, duration) {

@@ -172,6 +172,12 @@ img {
   font-size: var(--font-body);
   color: var(--color-accent);
   letter-spacing: var(--letter-spacing-body);
+  transform-origin: left center;
+  transition: transform 200ms var(--easing);
+}
+
+.site-name:hover {
+  transform: scale(1.03);
 }
 
 .filters {
@@ -227,7 +233,10 @@ img {
 ---------------------------------------------------------------- */
 .stage {
   position: absolute;
-  inset: 0 0 calc(var(--chrome-pad) + 44px) 0;
+  /* Top inset reserves the nav-bar zone (matches the bottom chrome inset) so
+     photos never ride up over the header icons. overflow:hidden below clips
+     anything taller than the remaining space to the nav's lower edge. */
+  inset: calc(var(--chrome-pad) + 44px) 0 calc(var(--chrome-pad) + 44px) 0;
   /* Above .panel__backdrop (3) but below the panels (5). The backdrop is
      opaque and .page is not a stacking context, so at z-index auto the
      backdrop faded in directly ON TOP of the gallery — the scale-out was
@@ -962,6 +971,10 @@ img {
   color: var(--color-accent);
   opacity: 0.4;
   transition: opacity 200ms var(--easing);
+}
+
+.nav__item:not(.is-active):hover {
+  opacity: 0.7;
 }
 
 .nav__item.is-active {

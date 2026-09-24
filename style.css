@@ -301,10 +301,10 @@ img {
 .panel__inner {
   position: relative;
   z-index: 1;
-  width: var(--about-column-width, 396px);
+  width: var(--about-column-width, 440px);
   max-width: calc(100% - 48px);
   margin: 0 auto;
-  padding: 144px 0 128px;
+  padding: 96px 0 88px;
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -590,7 +590,10 @@ img {
 }
 
 .reading .panel__inner {
-  width: min(640px, calc(100% - 48px));
+  width: min(700px, calc(100% - 48px));
+  /* Less vertical padding than the About/Contact panels; top still clears
+     the fixed nav. */
+  padding: 96px 0 88px;
 }
 
 .reading__body {
@@ -876,11 +879,20 @@ img {
   background: var(--color-surface);
 }
 
+/* The focused writing card opens the full piece on click (see script.js),
+   so signal that the whole card is clickable, not just "Continue". */
+.item--writing.is-focused {
+  cursor: pointer;
+}
+
 .item--writing .item__inner {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
   gap: 12px;
+  /* Vertical breathing room so the date and "Continue" aren't flush against
+     the top/bottom edges of the card. */
+  padding: 24px 0;
   color: var(--color-accent);
 }
 

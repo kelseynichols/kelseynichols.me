@@ -131,7 +131,7 @@
     textTransform: "uppercase",
     // About page
     aboutLedeScale: 1.5,    // multiplier on fontTitle
-    aboutColumnWidth: 396,  // px
+    aboutColumnWidth: 440,  // px
     aboutRevealStagger: 15,    // ms between consecutive lines
     aboutHeaderStaggerMult: 2, // header (lede) lines stagger this much more
     aboutLineDurationMs: 600,  // per-line slide duration (identical for entrance + exit)

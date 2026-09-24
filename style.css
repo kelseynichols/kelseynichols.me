@@ -67,6 +67,8 @@
   --thumb-size: 160px;
   --item-gap: 24px;
   --item-padding: 24px;
+  /* Item height = width x this. 1 = square (desktop); mobile makes it portrait. */
+  --item-aspect: 1;
 
   --tick-width: 1px;
   --tick-gap: 8px;
@@ -804,10 +806,13 @@ img {
 }
 
 .item__scale {
-  /* Design size = inner of the focused box (focusedSize - 2*padding). */
+  /* Design size = inner of the focused box. Width drives the uniform scale;
+     height carries --item-aspect and is sized to fill the focused item box
+     exactly (focusedSize*aspect - 2*padding), so a portrait photo covers the
+     frame with no gap. With --item-aspect: 1 this is identical to the width. */
   position: relative;
   width: calc(var(--focused-size) - 2 * var(--item-padding));
-  height: calc(var(--focused-size) - 2 * var(--item-padding));
+  height: calc(var(--focused-size) * var(--item-aspect) - 2 * var(--item-padding));
   transform-origin: top left;
   will-change: transform;
 }
@@ -1334,6 +1339,8 @@ img {
     --thumb-size: min(22vw, 100px);
     --item-padding: 16px;
     --chrome-pad: 16px;
+    /* Portrait 4:5 on phones — a little more vertical presence than square. */
+    --item-aspect: 1.25;
   }
 
   .header,

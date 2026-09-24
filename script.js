@@ -206,6 +206,7 @@
   let thumbSize = 160;
   let gap = 24;
   let itemPadding = 24;
+  let itemAspect = 1;   // item height = width * itemAspect (portrait on mobile)
   let designInnerSize = focusedSize - 2 * itemPadding;
 
   /**
@@ -484,6 +485,11 @@
     measure.style.width = "var(--item-padding)";
     itemPadding = measure.getBoundingClientRect().width;
     measure.remove();
+    // Unitless ratio — read straight off the computed custom property.
+    const aspectRaw = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue("--item-aspect")
+    );
+    itemAspect = aspectRaw > 0 ? aspectRaw : 1;
     designInnerSize = focusedSize - 2 * itemPadding;
   }
 
@@ -555,7 +561,7 @@
       const w = sizes[i];
       const pres = presence[i];
       itemNodes[i].style.width = `${w}px`;
-      itemNodes[i].style.height = `${w}px`;
+      itemNodes[i].style.height = `${w * itemAspect}px`;
       itemNodes[i].style.padding = `${itemPadding * pres}px`;
       itemNodes[i].style.marginLeft = i === 0 ? "0px" : `${gap * pres}px`;
 

@@ -244,10 +244,11 @@ img {
 ---------------------------------------------------------------- */
 .stage {
   position: absolute;
-  /* Top inset reserves the nav-bar zone (matches the bottom chrome inset) so
-     photos never ride up over the header icons. overflow:hidden below clips
-     anything taller than the remaining space to the nav's lower edge. */
-  inset: calc(var(--chrome-pad) + 44px) 0 calc(var(--chrome-pad) + 44px) 0;
+  /* Top inset reserves the nav-bar zone so photos never ride up over the
+     header icons. The larger bottom inset adds breathing room above the
+     scrubber so content doesn't crowd it. overflow:hidden clips anything
+     taller than the remaining space. */
+  inset: calc(var(--chrome-pad) + 44px) 0 calc(var(--chrome-pad) + 44px + 24px) 0;
   /* Above .panel__backdrop (3) but below the panels (5). The backdrop is
      opaque and .page is not a stacking context, so at z-index auto the
      backdrop faded in directly ON TOP of the gallery — the scale-out was

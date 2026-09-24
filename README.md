@@ -1,3 +1,3 @@
 hi 👋 i'm kelsey, this is my site.
 
-→ kelseynichols.me
+→ [kelseynichols.me](https://kelseynichols.me)

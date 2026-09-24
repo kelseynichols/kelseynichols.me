@@ -112,6 +112,23 @@
 
   const CONFIG = { ...DEFAULTS };
 
+  // Phones get a freer, longer-coasting glide and a stronger response to
+  // vertical swipes (browsing the carousel with up/down gestures, feed-style).
+  // Desktop always uses the DEFAULTS above — nothing here touches it. Tune the
+  // two numbers to taste; re-applied on viewport change so rotating works.
+  const MOBILE_CONFIG = {
+    momentumDecay: 0.90,        // was 0.80 — higher = longer, smoother coast
+    touchVerticalWeight: 0.85,  // was 0.50 — higher = up/down moves images more
+  };
+  const mobileMQ = window.matchMedia("(max-width: 768px)");
+  function applyResponsiveConfig() {
+    const m = mobileMQ.matches;
+    CONFIG.momentumDecay = m ? MOBILE_CONFIG.momentumDecay : DEFAULTS.momentumDecay;
+    CONFIG.touchVerticalWeight = m ? MOBILE_CONFIG.touchVerticalWeight : DEFAULTS.touchVerticalWeight;
+  }
+  applyResponsiveConfig();
+  mobileMQ.addEventListener("change", applyResponsiveConfig);
+
   /* ----------------------------------------------------------------
      Theme (colors + typography)
   ---------------------------------------------------------------- */

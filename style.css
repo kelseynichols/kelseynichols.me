@@ -612,7 +612,7 @@ img {
    nav stays in front and legible and the text reads as scrolling behind it.
    Scoped to the reading scroll container; the global chrome is untouched. */
 .reading {
-  --reading-fade: 72px;
+  --reading-fade: 104px;
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0,

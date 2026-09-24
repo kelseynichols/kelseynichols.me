@@ -608,6 +608,27 @@ img {
   padding: 96px 0 88px;
 }
 
+/* Fade the scrolling text out as it nears the fixed header/footer, so the
+   nav stays in front and legible and the text reads as scrolling behind it.
+   Scoped to the reading scroll container; the global chrome is untouched. */
+.reading {
+  --reading-fade: 72px;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--reading-fade),
+    #000 calc(100% - var(--reading-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--reading-fade),
+    #000 calc(100% - var(--reading-fade)),
+    transparent 100%
+  );
+}
+
 .reading__body {
   display: flex;
   flex-direction: column;

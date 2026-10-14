@@ -1533,6 +1533,16 @@ img {
     font-size: var(--font-body);
   }
 
+  /* Give the scrubber a wider center column on phones (the side nav/location
+     need little room), so its ticks can spread out — the gap is width-fit to
+     this column in applyTheme(). Plus more breathing room below it. */
+  .footer {
+    grid-template-columns: 1fr 2.6fr 1fr;
+  }
+  .scrubber {
+    padding-bottom: 18px;
+  }
+
   /* Stack the wordmark: Kelsey on top, Nichols below. Inline on desktop. */
   .site-name__part {
     display: block;

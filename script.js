@@ -1344,11 +1344,24 @@
     // No responsive overrides on these, so they can be written outright.
     root.style.setProperty("--tick-width", `${THEME.tickWidth}px`);
     // On phones the fixed-width tick row (count × (width + gap)) overran its
-    // footer column and overlapped the Work/About/Contact nav. Cap the gap so
-    // the whole scrubber fits the center column. Re-applied on breakpoint
-    // change (see mobileMQ listener in init).
-    const tickGap = mobileMQ.matches ? Math.min(THEME.tickGap, 3) : THEME.tickGap;
-    root.style.setProperty("--tick-gap", `${tickGap}px`);
+    // footer column and overlapped the Work/About/Contact nav. Fit the gap to
+    // the center column (2fr of a 1fr/2fr/1fr footer) so the scrubber is as
+    // wide as it can be without overlapping — never bigger than the theme gap,
+    // never smaller than 3px. Re-applied on breakpoint/resize (see init).
+    let tickGap = THEME.tickGap;
+    if (mobileMQ.matches && scrubberEl) {
+      // Measure the actual scrubber column (widened on mobile via the footer
+      // grid) and fit the widest gap that stays inside it. Falls back to the
+      // theme gap if layout isn't ready (width 0).
+      const colW = scrubberEl.getBoundingClientRect().width;
+      if (colW > 0) {
+        const avail = colW - 8; // small breathing room beside nav/location
+        const n = ITEMS.length;
+        const fit = n > 1 ? (avail - n * THEME.tickWidth) / (n - 1) : THEME.tickGap;
+        tickGap = Math.max(3, Math.min(THEME.tickGap, fit));
+      }
+    }
+    root.style.setProperty("--tick-gap", `${tickGap.toFixed(2)}px`);
     root.style.setProperty("--tick-max-height", `${THEME.tickMaxHeight}px`);
     root.style.setProperty("--intro-stage-fade", `${THEME.introStageFadeMs}ms`);
     root.style.setProperty("--intro-stage-scale", `${THEME.introStageScaleMs}ms`);
@@ -2679,12 +2692,16 @@
       readSizes();
       render();
       if (resizeRaf) cancelAnimationFrame(resizeRaf);
-      resizeRaf = requestAnimationFrame(relayoutPanels);
+      resizeRaf = requestAnimationFrame(() => {
+        // Recompute the width-fit scrubber gap for the new viewport.
+        applyTheme();
+        relayoutPanels();
+      });
     });
 
     window.addEventListener("popstate", syncFromUrl);
 
-    // Crossing the mobile breakpoint re-applies the capped scrubber tick gap.
+    // Crossing the mobile breakpoint re-applies the width-fit scrubber gap.
     mobileMQ.addEventListener("change", applyTheme);
 
     const initial = parsePath();

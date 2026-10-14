@@ -647,6 +647,76 @@ img {
   color: var(--color-accent);
 }
 
+/* Series grid — reuses the reading panel's back/meta/lede chrome, then lays
+   the full set out in a responsive portrait grid below. */
+.series .panel__inner {
+  width: min(920px, calc(100% - 48px));
+  padding: 96px 0 88px;
+}
+
+/* Same behind-the-nav scroll fade as the reading view. */
+.series {
+  --reading-fade: 104px;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--reading-fade),
+    #000 calc(100% - var(--reading-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--reading-fade),
+    #000 calc(100% - var(--reading-fade)),
+    transparent 100%
+  );
+}
+
+.series__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.series__frame {
+  margin: 0;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+/* Archive (contact sheet) — more work in one view, so wider and denser with
+   square tiles rather than portrait frames. */
+.series--archive .panel__inner {
+  width: min(1100px, calc(100% - 48px));
+}
+.series__grid--dense {
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+.series__grid--dense .series__frame {
+  aspect-ratio: 1 / 1;
+}
+
+.series__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Each frame reveals as a masked block (data-reveal-block wraps its image in
+   a .line/.line__inner). Drop the text-descender padding and let the wrapped
+   inner fill the frame so the image still covers the 4:5 box. */
+.series__frame.line {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.series__frame .line__inner {
+  height: 100%;
+}
+
 /* Line-by-line masked reveal ---------------------------------------
    Not scoped to .panel: the same masks drive the page-chrome intro on
    first load (see .page--intro-in below). An inner sits hidden until an
@@ -912,6 +982,85 @@ img {
   letter-spacing: var(--letter-spacing-body);
   text-align: center;
   padding: 8px;
+}
+
+/* Series — a cover frame that reads as a stack of more work. The offset
+   solid box-shadows fake "sheets" behind the photo; box-shadow isn't clipped
+   by overflow, so the frame itself can still clip the image. */
+.item--series .item__inner {
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow:
+    7px 7px 0 -1px rgba(200, 222, 194, 0.14),
+    14px 14px 0 -2px rgba(200, 222, 194, 0.07);
+}
+.item--series .item__inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Label chip, bottom-left of the cover — names the set and its count.
+   Shared by series covers and the archive (contact sheet) cover. */
+.item--series .item__series-label,
+.item--archive .item__series-label {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 1; /* above the cover image */
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* Taller top padding so the gradient has room to ramp up gradually. */
+  padding: 40px 12px 12px;
+  /* #1: a strong, taller bottom gradient keeps the label legible over any
+     photo while leaving the rest of the cover at full brightness. */
+  background: linear-gradient(
+    to top,
+    rgba(18, 12, 11, 0.98) 0%,
+    rgba(18, 12, 11, 0.7) 45%,
+    transparent 100%
+  );
+  width: 100%;
+  pointer-events: none;
+}
+.item--series .item__series-name,
+.item--archive .item__series-name {
+  font-size: calc(var(--font-body) * 1.25);
+  letter-spacing: var(--letter-spacing-body);
+  text-transform: var(--text-transform);
+  color: var(--color-accent);
+}
+.item--series .item__series-count,
+.item--archive .item__series-count {
+  font-size: calc(var(--font-body) * 0.85);
+  letter-spacing: var(--letter-spacing-body);
+  text-transform: var(--text-transform);
+  color: var(--color-accent);
+  opacity: 0.6;
+}
+
+/* Archive cover — the viewfinder: a dense grid of every frame as tiny
+   squares, with the same dimming film + label as a series cover. */
+.item--archive .item__inner {
+  overflow: hidden;
+  cursor: pointer;
+}
+.item__archive-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  /* 3 cols x 4 rows for the 12 sample frames — near-square tiles in the
+     portrait cover (see ARCHIVE_COVER_MAX in script.js). */
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 2px;
+}
+.item__archive-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 /* Writing */

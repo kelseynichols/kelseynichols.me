@@ -13,7 +13,28 @@
   const ITEMS = [
     { type: "photo", src: "media/photos/ladder-workers.png", alt: "Street scene with two workers carrying a ladder past a warm yellow wall." },
     { type: "photo", src: "media/photos/flower-shop-double-exposure.png", alt: "Double-exposure of a flower shop street scene." },
-    { type: "photo", src: "media/photos/nordic-bathhouse.png", alt: "Boardwalk and bathhouse by the sea, swimmers below." },
+    {
+      // A "series" is a project: one cover frame in the reel, opening to a
+      // grid of the whole set. `src` is the carousel cover; `photos` is the
+      // grid. Placeholder frames below reuse existing images — swap for the
+      // real set later (same shape as a photo item: { src, alt }).
+      type: "series",
+      slug: "lofoten",
+      title: "Lofoten",
+      meta: "Norway · 2024",
+      src: "media/photos/iceberg.png",
+      alt: "Lofoten — a sculpted iceberg in still water.",
+      photos: [
+        { src: "media/photos/iceberg.png", alt: "Sculpted blue iceberg floating in still water." },
+        { src: "media/photos/nordic-bathhouse.png", alt: "Boardwalk and bathhouse by the sea, swimmers below." },
+        { src: "media/photos/badlands.png", alt: "Figure standing amid eroded ridges." },
+        { src: "media/photos/lake-backflip.png", alt: "A diver backflipping off a platform into a lake." },
+        { src: "media/photos/riverside-sunbathers.png", alt: "People sunbathing along a wooden waterfront deck." },
+        { src: "media/photos/tropical-beach.png", alt: "A palm-lined beach with mountains and sailboats." },
+        { src: "media/photos/seven-magic-mountains.png", alt: "Colorful stacked boulder sculptures in the desert." },
+        { src: "media/photos/life-ring-portrait.png", alt: "Portrait beside a life ring, with a light leak." },
+      ],
+    },
     { type: "web",   src: null, alt: "Web project preview." },
     { type: "photo", src: "media/photos/jacaranda-tree.png", alt: "A blooming jacaranda tree against a stone wall." },
     { type: "photo", src: "media/photos/wild-sunflowers.png", alt: "A field of wild sunflowers against the sky." },
@@ -51,7 +72,22 @@
       ],
     },
     { type: "photo", src: "media/photos/laundromat.png", alt: "Rows of washers and dryers lit by warm evening light." },
-    { type: "photo", src: "media/photos/kyoto-pagoda.png", alt: "A woman with a red umbrella on a Kyoto street, pagoda behind." },
+    {
+      type: "series",
+      slug: "kyoto",
+      title: "Kyoto",
+      meta: "Japan · 2023",
+      src: "media/photos/kyoto-pagoda.png",
+      alt: "Kyoto — a red umbrella on a street, pagoda behind.",
+      photos: [
+        { src: "media/photos/kyoto-pagoda.png", alt: "A woman with a red umbrella on a Kyoto street, pagoda behind." },
+        { src: "media/photos/white-temple.png", alt: "Ornate white temple architecture against clouds." },
+        { src: "media/photos/jacaranda-tree.png", alt: "A blooming jacaranda tree against a stone wall." },
+        { src: "media/photos/lily-pond.png", alt: "Pink water lilies floating on a dark pond." },
+        { src: "media/photos/garden-bench.png", alt: "Three people reading on a bench along a garden boardwalk." },
+        { src: "media/photos/laundromat.png", alt: "Rows of washers and dryers lit by warm evening light." },
+      ],
+    },
     { type: "photo", src: "media/photos/arched-balconies.png", alt: "Looking up at rows of curved balcony architecture." },
     { type: "web",   src: null, alt: "Web project preview." },
     { type: "photo", src: "media/photos/riverside-sunbathers.png", alt: "People sunbathing along a wooden waterfront deck." },
@@ -73,7 +109,25 @@
     { type: "photo", src: "media/photos/brick-balconies.png", alt: "Brick apartment facade with residents on their balconies." },
     { type: "photo", src: "media/photos/yellow-daisies.png", alt: "Close-up of yellow daisies with dark purple centers." },
     { type: "photo", src: "media/photos/sf-cable-car.png", alt: "A cable car on a San Francisco street among skyscrapers." },
+    // Contact sheet: the last card in the reel. Its cover is a viewfinder of
+    // tiny frames; clicking it opens the full grid of ALL work (every photo
+    // plus every series frame, gathered in ALL_PHOTOS below).
+    { type: "archive", title: "All work" },
   ];
+
+  // How many sample frames the contact-sheet COVER shows (a 3-col grid, so a
+  // multiple of 3 fills cleanly). The /all/ panel still shows every frame.
+  const ARCHIVE_COVER_MAX = 12;
+
+  // Every photograph across the site, in reel order: standalone photos and
+  // each series' frames. Powers the contact-sheet cover and the /all/ grid.
+  const ALL_PHOTOS = [];
+  ITEMS.forEach((it) => {
+    if (it.type === "photo") ALL_PHOTOS.push({ src: it.src, alt: it.alt || "" });
+    else if (it.type === "series") {
+      (it.photos || []).forEach((p) => ALL_PHOTOS.push({ src: p.src, alt: p.alt || "" }));
+    }
+  });
 
   // Contact form routes here. Swap this to change where messages go.
   const CONTACT_EMAIL = "kelseynichols2@gmail.com";
@@ -294,6 +348,55 @@
         img.loading = "lazy";
         img.draggable = false;
         inner.appendChild(img);
+      } else if (item.type === "series") {
+        // Cover frame renders like a photo; a label marks it as a set and
+        // (CSS box-shadow) stacks a couple of "sheets" behind the frame so it
+        // reads as more work waiting inside.
+        const img = document.createElement("img");
+        img.src = item.src;
+        img.alt = item.alt || "";
+        img.loading = "lazy";
+        img.draggable = false;
+        inner.appendChild(img);
+
+        const label = document.createElement("div");
+        label.className = "item__series-label";
+        const name = document.createElement("span");
+        name.className = "item__series-name";
+        name.textContent = item.title || "";
+        const count = document.createElement("span");
+        count.className = "item__series-count";
+        count.textContent = `${(item.photos || []).length} photos`;
+        label.appendChild(name);
+        label.appendChild(count);
+        inner.appendChild(label);
+      } else if (item.type === "archive") {
+        // Viewfinder cover: a sample of frames as little squares (the full set
+        // lives in the /all/ grid). Capped so this end card stays light —
+        // loading every full-res frame here would bog down mobile.
+        const grid = document.createElement("div");
+        grid.className = "item__archive-grid";
+        ALL_PHOTOS.slice(0, ARCHIVE_COVER_MAX).forEach((photo) => {
+          const img = document.createElement("img");
+          img.src = photo.src;
+          img.alt = "";
+          img.loading = "lazy";
+          img.draggable = false;
+          grid.appendChild(img);
+        });
+        inner.appendChild(grid);
+
+        const label = document.createElement("div");
+        label.className = "item__series-label";
+        const name = document.createElement("span");
+        name.className = "item__series-name";
+        name.textContent = item.title || "All work";
+        const count = document.createElement("span");
+        count.className = "item__series-count";
+        count.textContent = `${ALL_PHOTOS.length} photos`;
+        label.appendChild(name);
+        label.appendChild(count);
+        inner.appendChild(label);
       } else if (item.type === "web") {
         const chrome = document.createElement("div");
         chrome.className = "item__chrome";
@@ -377,6 +480,10 @@
         if (v === cur) {
           if (item.type === "writing" && item.slug && Array.isArray(item.full) && item.full.length) {
             openReading(item.slug);
+          } else if (item.type === "series" && item.slug && Array.isArray(item.photos) && item.photos.length) {
+            openSeries(item.slug);
+          } else if (item.type === "archive") {
+            openArchive();
           }
           return;
         }
@@ -763,7 +870,10 @@
 
     const now = performance.now();
     for (let i = 0; i < ITEMS.length; i++) {
-      const matched = !filter || ITEMS[i].type === filter;
+      // Series and the contact sheet are photo work, so the photo filter
+      // keeps them in alongside standalone photos.
+      const matched = !filter || ITEMS[i].type === filter ||
+        (filter === "photo" && (ITEMS[i].type === "series" || ITEMS[i].type === "archive"));
       const wasInSet = inSet[i];
       inSet[i] = matched;
       if (matched !== wasInSet) {
@@ -2003,9 +2113,13 @@
 
   const contactEl = document.getElementById("contact");
   const readingEl = document.getElementById("reading");
+  const seriesEl = document.getElementById("series");
+  const archiveEl = document.getElementById("archive");
   const aboutPanel = makePanel(aboutEl, "about");
   const contactPanel = makePanel(contactEl, "contact");
   const readingPanel = makePanel(readingEl, "reading");
+  const seriesPanel = makePanel(seriesEl, "series");
+  const archivePanel = makePanel(archiveEl, "all");
 
   /* ----------------------------------------------------------------
      Reading view — full writing pieces, opened by "Continue →".
@@ -2051,6 +2165,85 @@
     if (!setReadingContent(slug)) return;
     writeReadingRoute(slug);
     navTo("reading", { updateUrl: false });
+  }
+
+  /* ----------------------------------------------------------------
+     Series view — a project's full photo grid, opened by clicking a
+     focused "series" card. Same panel + reveal + routing as reading;
+     the body is a grid of frames rather than paragraphs.
+  ---------------------------------------------------------------- */
+  // slug -> series item, built from ITEMS so content lives in one place.
+  const SERIES = {};
+  ITEMS.forEach((it) => {
+    if (it.type === "series" && it.slug) SERIES[it.slug] = it;
+  });
+
+  const seriesMetaEl = document.getElementById("seriesMeta");
+  const seriesTitleEl = document.getElementById("seriesTitle");
+  const seriesGridEl = document.getElementById("seriesGrid");
+
+  // Populate the series grid for a slug. Must run BEFORE the panel opens so
+  // setupPanelReveal (on open) assigns reveal delays to the fresh figures.
+  function setSeriesContent(slug) {
+    const item = SERIES[slug];
+    if (!item || !seriesEl) return false;
+    // Reused elements cache split text in dataset.text; clear before repopulating.
+    seriesMetaEl.textContent = item.meta || "";
+    delete seriesMetaEl.dataset.text;
+    seriesTitleEl.textContent = item.title || "";
+    delete seriesTitleEl.dataset.text;
+    seriesGridEl.innerHTML = "";
+    (item.photos || []).forEach((photo) => {
+      const fig = document.createElement("figure");
+      fig.className = "series__frame";
+      fig.setAttribute("data-reveal-block", "");
+      const img = document.createElement("img");
+      img.src = photo.src;
+      img.alt = photo.alt || "";
+      img.loading = "lazy";
+      img.draggable = false;
+      fig.appendChild(img);
+      seriesGridEl.appendChild(fig);
+    });
+    seriesEl.dataset.slug = slug;
+    return true;
+  }
+
+  // Open a series: set content, write the URL, play the reveal.
+  function openSeries(slug) {
+    if (!setSeriesContent(slug)) return;
+    writeSeriesRoute(slug);
+    navTo("series", { updateUrl: false });
+  }
+
+  /* ----------------------------------------------------------------
+     Archive view — the contact sheet: every frame on the site in one
+     grid. Content is static (all work), so it's built once at init and
+     routed like About/Contact (a single /all/ path, no slug).
+  ---------------------------------------------------------------- */
+  const archiveGridEl = document.getElementById("archiveGrid");
+  const archiveMetaEl = document.getElementById("archiveMeta");
+
+  function buildArchiveGrid() {
+    if (!archiveGridEl) return;
+    if (archiveMetaEl) archiveMetaEl.textContent = `${ALL_PHOTOS.length} photos`;
+    archiveGridEl.innerHTML = "";
+    ALL_PHOTOS.forEach((photo) => {
+      const fig = document.createElement("figure");
+      fig.className = "series__frame";
+      fig.setAttribute("data-reveal-block", "");
+      const img = document.createElement("img");
+      img.src = photo.src;
+      img.alt = photo.alt || "";
+      img.loading = "lazy";
+      img.draggable = false;
+      fig.appendChild(img);
+      archiveGridEl.appendChild(fig);
+    });
+  }
+
+  function openArchive() {
+    navTo("all");
   }
 
   // Re-split every panel (line breaks depend on width/fonts) and restore its
@@ -2177,12 +2370,13 @@
      index.html for each route, so a refresh or shared link loads directly —
      no server rewrites needed. <base href="/"> keeps assets resolving.
   ---------------------------------------------------------------- */
-  const PANEL_ROUTES = ["about", "contact"];
+  const PANEL_ROUTES = ["about", "contact", "all"];
 
   const ROUTE_TITLES = {
     work: "Kelsey Nichols — Creative",
     about: "Kelsey Nichols — About",
     contact: "Kelsey Nichols — Contact",
+    all: "Kelsey Nichols — All work",
   };
 
   // Parse the pathname into { name, slug }. Reading pieces are a two-part
@@ -2194,12 +2388,20 @@
       const slug = p.slice("read/".length).replace(/\/+$/, "");
       if (WRITING[slug]) return { name: "reading", slug };
     }
+    if (p.startsWith("series/")) {
+      const slug = p.slice("series/".length).replace(/\/+$/, "");
+      if (SERIES[slug]) return { name: "series", slug };
+    }
     return { name: PANEL_ROUTES.includes(p) ? p : "work" };
   }
 
   function setRouteTitle(name, slug) {
     if (name === "reading" && slug && WRITING[slug]) {
       document.title = `Kelsey Nichols — ${(WRITING[slug].title || "").replace(/\.$/, "")}`;
+      return;
+    }
+    if (name === "series" && slug && SERIES[slug]) {
+      document.title = `Kelsey Nichols — ${(SERIES[slug].title || "").replace(/\.$/, "")}`;
       return;
     }
     document.title = ROUTE_TITLES[name] || ROUTE_TITLES.work;
@@ -2231,12 +2433,25 @@
     }
   }
 
+  // Same as writeRoute but for a series' two-part path (/series/<slug>/).
+  function writeSeriesRoute(slug, replace) {
+    const url = `/series/${slug}/`;
+    setRouteTitle("series", slug);
+    if (!replace && new URL(url, location.href).href === location.href) return;
+    try {
+      history[replace ? "replaceState" : "pushState"](null, "", url);
+    } catch (err) {
+      // Some origins reject history writes; the view still navigates fine.
+    }
+  }
+
   // Back/forward land here via popstate. navTo is idempotent, so re-syncing
   // to a URL the view already matches is harmless.
   function syncFromUrl() {
     const r = parsePath();
     setRouteTitle(r.name, r.slug);
     if (r.name === "reading") setReadingContent(r.slug);
+    if (r.name === "series") setSeriesContent(r.slug);
     navTo(r.name, { updateUrl: false });
   }
 
@@ -2284,8 +2499,9 @@
   }
 
   function updateNavActive(section) {
-    // Reading is a sub-view of Work — keep Work highlighted while it's open.
-    const active = section === "reading" ? "work" : section;
+    // Reading, series, and the archive are sub-views of Work — keep Work lit.
+    const active = (section === "reading" || section === "series" || section === "all")
+      ? "work" : section;
     navItems.forEach((a) => {
       const nav = a.dataset.nav;
       if (nav === "about" || nav === "work" || nav === "contact") {
@@ -2364,6 +2580,19 @@
       if (backBtn) backBtn.addEventListener("click", () => navTo("work"));
     }
 
+    // Same "← Back" return for the series grid panel.
+    if (seriesEl) {
+      const backBtn = document.getElementById("seriesBack");
+      if (backBtn) backBtn.addEventListener("click", () => navTo("work"));
+    }
+
+    // Archive (contact sheet): build its grid once, wire its "← Back".
+    if (archiveEl) {
+      buildArchiveGrid();
+      const backBtn = document.getElementById("archiveBack");
+      if (backBtn) backBtn.addEventListener("click", () => navTo("work"));
+    }
+
 
     buildItems();
     buildScrubber();
@@ -2439,6 +2668,9 @@
     if (initial.name === "reading") {
       setReadingContent(initial.slug);
       writeReadingRoute(initial.slug, true);
+    } else if (initial.name === "series") {
+      setSeriesContent(initial.slug);
+      writeSeriesRoute(initial.slug, true);
     } else {
       writeRoute(initial.name, true);
     }

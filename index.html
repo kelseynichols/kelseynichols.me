@@ -10,16 +10,29 @@
     <base href="/" />
 
     <title>Kelsey Nichols — Creative</title>
+    <meta name="description" content="designer, developer, and creative based in long beach, ca." />
+    <link rel="canonical" href="https://kelseynichols.me" />
 
     <!-- favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 
-    <!-- social sharing -->
+    <!-- social sharing (Open Graph — Facebook, iMessage, LinkedIn, Slack…) -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Kelsey Nichols" />
     <meta property="og:url" content="https://kelseynichols.me" />
     <meta property="og:title" content="Kelsey Nichols" />
     <meta property="og:description" content="designer, developer, and creative based in long beach, ca." />
     <meta property="og:image" content="https://kelseynichols.me/og-image.jpg" />
+    <meta property="og:image:width" content="2048" />
+    <meta property="og:image:height" content="1080" />
+    <meta property="og:image:alt" content="Kelsey Nichols — photography" />
+
+    <!-- social sharing (Twitter / X — falls back to OG, but likes its own tags) -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Kelsey Nichols" />
+    <meta name="twitter:description" content="designer, developer, and creative based in long beach, ca." />
+    <meta name="twitter:image" content="https://kelseynichols.me/og-image.jpg" />
 
     <link rel="stylesheet" href="style.css" />
   </head>
@@ -154,6 +167,28 @@
           <div class="reading__meta" id="readingMeta" data-reveal></div>
           <h1 class="reading__lede panel__lede" id="readingTitle" data-reveal></h1>
           <div class="reading__body" id="readingBody"><!-- paragraphs injected by JS --></div>
+        </div>
+      </section>
+
+      <section class="series panel" id="series" aria-label="Photo series" aria-hidden="true">
+        <div class="series__inner panel__inner">
+          <button class="reading__back" id="seriesBack" type="button" data-reveal-block aria-label="Back to work">
+            <span class="reading__back-arrow" aria-hidden="true">←</span> Back
+          </button>
+          <div class="reading__meta" id="seriesMeta" data-reveal></div>
+          <h1 class="reading__lede panel__lede" id="seriesTitle" data-reveal></h1>
+          <div class="series__grid" id="seriesGrid"><!-- figures injected by JS --></div>
+        </div>
+      </section>
+
+      <section class="series series--archive panel" id="archive" aria-label="All work" aria-hidden="true">
+        <div class="series__inner panel__inner">
+          <button class="reading__back" id="archiveBack" type="button" data-reveal-block aria-label="Back to work">
+            <span class="reading__back-arrow" aria-hidden="true">←</span> Back
+          </button>
+          <div class="reading__meta" id="archiveMeta" data-reveal></div>
+          <h1 class="reading__lede panel__lede" data-reveal>All work</h1>
+          <div class="series__grid series__grid--dense" id="archiveGrid"><!-- figures injected by JS --></div>
         </div>
       </section>
 

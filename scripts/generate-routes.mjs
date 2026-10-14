@@ -21,10 +21,22 @@ const shell = rawShell
   .replace('href="style.css"', `href="style.css?v=${version}"`)
   .replace('src="script.js"', `src="script.js?v=${version}"`);
 
-// Writing slugs come straight from the ITEMS data in script.js, so adding a
-// piece there is all it takes — no route list to keep in sync here.
-const slugs = [...js.matchAll(/slug:\s*["']([^"']+)["']/g)].map((m) => m[1]);
-const routes = ["about", "contact", ...slugs.map((s) => `read/${s}`)];
+// Slugs come straight from the ITEMS data in script.js, so adding a piece or
+// series there is all it takes — no route list to keep in sync here. Each item
+// authors `slug` immediately after `type`, so a type-scoped match keeps
+// writing (/read/) and series (/series/) routes apart.
+const slugsForType = (type) =>
+  [...js.matchAll(new RegExp(`type:\\s*["']${type}["'],?\\s*slug:\\s*["']([^"']+)["']`, "g"))]
+    .map((m) => m[1]);
+const readingSlugs = slugsForType("writing");
+const seriesSlugs = slugsForType("series");
+const routes = [
+  "about",
+  "contact",
+  "all",
+  ...readingSlugs.map((s) => `read/${s}`),
+  ...seriesSlugs.map((s) => `series/${s}`),
+];
 
 for (const route of routes) {
   const dir = join(root, route);

@@ -1067,6 +1067,10 @@ img {
   height: 100%;
   object-fit: cover;
   display: block;
+  /* Without this, a 1fr row floors at its images' intrinsic height, so the
+     first (lazy-loaded) row ballooned taller than the rest. 0 keeps rows equal. */
+  min-width: 0;
+  min-height: 0;
 }
 
 /* Writing */
@@ -1518,12 +1522,12 @@ img {
 ---------------------------------------------------------------- */
 @media (max-width: 768px) {
   :root {
-    --focused-size: min(80vw, 340px);
+    --focused-size: min(85vw, 370px);
     --thumb-size: min(22vw, 100px);
     --item-padding: 16px;
     --chrome-pad: 16px;
-    /* Portrait 4:5 on phones — a little more vertical presence than square. */
-    --item-aspect: 1.25;
+    /* Taller-than-4:5 on phones for more vertical presence. */
+    --item-aspect: 1.4;
   }
 
   .site-name,
@@ -1541,6 +1545,13 @@ img {
   }
   .scrubber {
     padding-bottom: 18px;
+  }
+
+  /* Top-align the wordmark instead of centering it in the taller filter-icon
+     row, so "Kelsey" sits at the same inset as the footer's "Contact" line and
+     the top/bottom gaps match. */
+  .site-name {
+    align-self: start;
   }
 
   /* Stack the wordmark: Kelsey on top, Nichols below. Inline on desktop. */

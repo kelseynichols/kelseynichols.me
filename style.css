@@ -579,8 +579,10 @@ img {
   line-height: var(--line-height-body);
   letter-spacing: var(--letter-spacing-body);
   text-transform: var(--text-transform);
-  color: var(--color-accent);
-  opacity: 0.55;
+  /* The alternative action color (same red as the writing "Continue →"), so
+     Back reads as an action and stands apart from the green everywhere else. */
+  color: var(--color-writing-continue);
+  opacity: 0.8;
   transition: opacity 200ms var(--easing);
 }
 
@@ -1560,18 +1562,18 @@ img {
     padding-right: 16px;
   }
 
-  /* Series / reading / archive panels: start the content a fixed 16px below the
-     header instead of a big fixed inset (96px looked like too much space above
-     "Back"). Tie it to the header height (44px filter row) + the safe-area so
-     it still clears the notch on phones that have one. Fade matches so "Back"
-     lands just past it, fully opaque. */
+  /* Series / reading / archive panels: start the content just below the header.
+     The 44px filter row FADES OUT in panel view, so Back only needs to clear
+     the ~26px wordmark/date-time — reserve for that (not the filters) + the
+     safe-area so it still clears the notch. Fade matches so Back lands just
+     past it, fully opaque. (96px fixed looked like far too much space above.) */
   .reading,
   .series {
-    --reading-fade: calc(44px + max(16px, env(safe-area-inset-top)));
+    --reading-fade: calc(42px + max(16px, env(safe-area-inset-top)));
   }
   .reading .panel__inner,
   .series .panel__inner {
-    padding-top: calc(60px + max(16px, env(safe-area-inset-top)));
+    padding-top: calc(58px + max(16px, env(safe-area-inset-top)));
   }
 
   /* Tuck the date up against the title below it (was a full 24px panel gap). */
@@ -1579,12 +1581,9 @@ img {
     margin-bottom: -16px;
   }
 
-  /* Top-align the wordmark instead of centering it in the taller filter-icon
-     row, so "Kelsey" sits at the same inset as the footer's "Contact" line and
-     the top/bottom gaps match. */
-  .site-name {
-    align-self: start;
-  }
+  /* Header stays vertically centered (base rule) so the wordmark, the 44px
+     filter buttons, and the date/time all sit on one line. (Top-aligning only
+     the wordmark, or the whole row, broke alignment with the filters.) */
 
   /* Stack the wordmark: Kelsey on top, Nichols below. Inline on desktop. */
   .site-name__part {

@@ -1524,7 +1524,8 @@ img {
   :root {
     --focused-size: min(85vw, 370px);
     --thumb-size: min(22vw, 100px);
-    --item-padding: 16px;
+    /* Thinner frame inset so the photo fills more of the card on phones. */
+    --item-padding: 8px;
     --chrome-pad: 16px;
     /* Taller-than-4:5 on phones for more vertical presence. */
     --item-aspect: 1.4;
@@ -1544,7 +1545,38 @@ img {
     grid-template-columns: 1fr 2.1fr 1fr;
   }
   .scrubber {
+    /* Fill the center column (base rule shrink-wraps it via justify-self:
+       center, which made the width measurement in applyTheme circular and let
+       the ticks overflow + sit off-centre). Stretched, the box = the column,
+       so the gap fits it and justify-content:center centres the ticks in it. */
+    justify-self: stretch;
     padding-bottom: 18px;
+  }
+
+  /* Writing cards read as text, not photos — give them horizontal breathing
+     room (the thin 8px frame inset alone left the copy too close to the edge). */
+  .item--writing .item__inner {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* Series / reading / archive panels: start the content a fixed 16px below the
+     header instead of a big fixed inset (96px looked like too much space above
+     "Back"). Tie it to the header height (44px filter row) + the safe-area so
+     it still clears the notch on phones that have one. Fade matches so "Back"
+     lands just past it, fully opaque. */
+  .reading,
+  .series {
+    --reading-fade: calc(44px + max(16px, env(safe-area-inset-top)));
+  }
+  .reading .panel__inner,
+  .series .panel__inner {
+    padding-top: calc(60px + max(16px, env(safe-area-inset-top)));
+  }
+
+  /* Tuck the date up against the title below it (was a full 24px panel gap). */
+  .reading__meta {
+    margin-bottom: -16px;
   }
 
   /* Top-align the wordmark instead of centering it in the taller filter-icon

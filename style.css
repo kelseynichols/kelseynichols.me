@@ -63,12 +63,16 @@
   --font-weight: 400;
   --text-transform: uppercase;
 
-  --focused-size: 640px;
+  /* Portrait images (see --item-aspect). Width is capped at 640px, but on
+     shorter windows it shrinks so height (= width x aspect) still clears the
+     stage insets (~180px of nav + scrubber room) and never gets clipped. */
+  --focused-size: min(640px, (100svh - 180px) / 1.25);
   --thumb-size: 160px;
   --item-gap: 24px;
   --item-padding: 24px;
-  /* Item height = width x this. 1 = square (desktop); mobile makes it portrait. */
-  --item-aspect: 1;
+  /* Item height = width x this. 1.25 = portrait 4:5, a little more vertical
+     presence than square. Matches the phone proportion. */
+  --item-aspect: 1.25;
 
   --tick-width: 1px;
   --tick-gap: 8px;
@@ -313,7 +317,7 @@ img {
 .panel__inner {
   position: relative;
   z-index: 1;
-  width: var(--about-column-width, 470px);
+  width: var(--about-column-width, 560px);
   max-width: calc(100% - 48px);
   margin: 0 auto;
   padding: 96px 0 88px;

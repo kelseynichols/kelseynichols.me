@@ -279,6 +279,9 @@
   let itemPadding = 24;
   let itemAspect = 1;   // item height = width * itemAspect (portrait on mobile)
   let designInnerSize = focusedSize - 2 * itemPadding;
+  // Cached in readSizes() (init + resize). Reading stage.clientWidth inside
+  // render() forced a synchronous reflow every animation frame.
+  let stageWidth = 0;
 
   /**
    * offset is a fractional index into the CURRENTLY VISIBLE items
@@ -346,6 +349,7 @@
         img.src = item.src;
         img.alt = item.alt || "";
         img.loading = "lazy";
+        img.decoding = "async";
         img.draggable = false;
         inner.appendChild(img);
       } else if (item.type === "series") {
@@ -356,6 +360,7 @@
         img.src = item.src;
         img.alt = item.alt || "";
         img.loading = "lazy";
+        img.decoding = "async";
         img.draggable = false;
         inner.appendChild(img);
 
@@ -381,6 +386,7 @@
           img.src = photo.src;
           img.alt = "";
           img.loading = "lazy";
+          img.decoding = "async";
           img.draggable = false;
           grid.appendChild(img);
         });
@@ -615,6 +621,7 @@
     );
     itemAspect = aspectRaw > 0 ? aspectRaw : 1;
     designInnerSize = focusedSize - 2 * itemPadding;
+    stageWidth = stage.clientWidth;
   }
 
   /* ----------------------------------------------------------------
@@ -723,7 +730,6 @@
       }
     }
 
-    const stageWidth = stage.clientWidth;
     const tx = stageWidth / 2 - targetCenter;
     track.style.transform = `translate3d(${tx}px, -50%, 0)`;
 
@@ -1093,7 +1099,12 @@
     if (offset > maxOff) offset = maxOff;
 
     const dt = Math.max(1, now - touchLastTime);
-    velocity = Math.max(-CONFIG.velocityCap, Math.min(CONFIG.velocityCap, deltaItems / dt));
+    // Blend with the running velocity (EMA) so the fling survives a slow final
+    // sample — lifting your finger mid-decelerate used to capture ~0 and kill
+    // the coast. onTouchStart resets velocity to 0, so each gesture starts clean.
+    const inst = deltaItems / dt;
+    velocity = Math.max(-CONFIG.velocityCap,
+      Math.min(CONFIG.velocityCap, velocity * 0.5 + inst * 0.5));
 
     touchLastX = x;
     touchLastY = y;
@@ -1105,7 +1116,11 @@
   function onTouchEnd() {
     if (!touching) return;
     touching = false;
-    lastInputTime = performance.now();
+    // Backdate past the 60ms "active" window so momentum coasts IMMEDIATELY on
+    // release. Without this, tick() spent the first 60ms only decaying velocity
+    // (not moving), so a flick stalled instead of free-scrolling. Touch only —
+    // the wheel/trackpad path manages lastInputTime itself.
+    lastInputTime = performance.now() - 100;
     startLoop();
   }
 
@@ -1328,7 +1343,12 @@
 
     // No responsive overrides on these, so they can be written outright.
     root.style.setProperty("--tick-width", `${THEME.tickWidth}px`);
-    root.style.setProperty("--tick-gap", `${THEME.tickGap}px`);
+    // On phones the fixed-width tick row (count × (width + gap)) overran its
+    // footer column and overlapped the Work/About/Contact nav. Cap the gap so
+    // the whole scrubber fits the center column. Re-applied on breakpoint
+    // change (see mobileMQ listener in init).
+    const tickGap = mobileMQ.matches ? Math.min(THEME.tickGap, 3) : THEME.tickGap;
+    root.style.setProperty("--tick-gap", `${tickGap}px`);
     root.style.setProperty("--tick-max-height", `${THEME.tickMaxHeight}px`);
     root.style.setProperty("--intro-stage-fade", `${THEME.introStageFadeMs}ms`);
     root.style.setProperty("--intro-stage-scale", `${THEME.introStageScaleMs}ms`);
@@ -2201,6 +2221,7 @@
       img.src = photo.src;
       img.alt = photo.alt || "";
       img.loading = "lazy";
+      img.decoding = "async";
       img.draggable = false;
       fig.appendChild(img);
       seriesGridEl.appendChild(fig);
@@ -2236,6 +2257,7 @@
       img.src = photo.src;
       img.alt = photo.alt || "";
       img.loading = "lazy";
+      img.decoding = "async";
       img.draggable = false;
       fig.appendChild(img);
       archiveGridEl.appendChild(fig);
@@ -2661,6 +2683,9 @@
     });
 
     window.addEventListener("popstate", syncFromUrl);
+
+    // Crossing the mobile breakpoint re-applies the capped scrubber tick gap.
+    mobileMQ.addEventListener("change", applyTheme);
 
     const initial = parsePath();
     // Canonicalise the URL (drop junk fragments, normalise case) in place,

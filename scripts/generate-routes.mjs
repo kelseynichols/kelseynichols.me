@@ -10,30 +10,35 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const rawShell = readFileSync(join(root, "index.html"), "utf8");
-const js = readFileSync(join(root, "script.js"), "utf8");
 
 // Cache-busting version: the commit SHA in CI, a timestamp locally. Appended
-// to the style.css / script.js URLs so every deploy serves fresh assets
-// instead of a browser holding onto a stale cached copy (the filenames are
-// unchanged, so the server still returns the same files).
+// to the style.css / script.js / content.js URLs so every deploy serves fresh
+// assets instead of a browser holding onto a stale cached copy (the filenames
+// are unchanged, so the server still returns the same files).
 const version = (process.env.GITHUB_SHA || Date.now().toString()).slice(0, 8);
 const shell = rawShell
   .replace('href="style.css"', `href="style.css?v=${version}"`)
   .replace('src="script.js"', `src="script.js?v=${version}"`)
+  .replace('src="content.js"', `src="content.js?v=${version}"`)
   .replace(
     'src="media/photos/manifest.js"',
     `src="media/photos/manifest.js?v=${version}"`
   );
 
-// Slugs come straight from the ITEMS data in script.js, so adding a piece or
-// series there is all it takes — no route list to keep in sync here. Each item
-// authors `slug` immediately after `type`, so a type-scoped match keeps
-// writing (/read/) and series (/series/) routes apart.
-const slugsForType = (type) =>
-  [...js.matchAll(new RegExp(`type:\\s*["']${type}["'],?\\s*slug:\\s*["']([^"']+)["']`, "g"))]
-    .map((m) => m[1]);
-const readingSlugs = slugsForType("writing");
-const seriesSlugs = slugsForType("series");
+// Routes come straight from the pieces authored in content.js, so adding a
+// piece there is all it takes — no route list to keep in sync here. content.js
+// is a plain script that sets window.SITE_CONTENT; run it with a minimal window
+// stub to read the pieces, then derive routes the same way the site does:
+// a piece with `photos` opens a series (/series/), otherwise `writing` opens a
+// reading piece (/read/).
+const contentSrc = readFileSync(join(root, "content.js"), "utf8");
+const sandboxWindow = {};
+new Function("window", contentSrc)(sandboxWindow);
+const pieces = (sandboxWindow.SITE_CONTENT && sandboxWindow.SITE_CONTENT.pieces) || [];
+const seriesSlugs = pieces.filter((p) => p.slug && p.photos).map((p) => p.slug);
+const readingSlugs = pieces
+  .filter((p) => p.slug && p.writing && !p.photos)
+  .map((p) => p.slug);
 const routes = [
   "about",
   "contact",

@@ -181,6 +181,7 @@
           </button>
           <div class="reading__meta" id="seriesMeta" data-reveal></div>
           <h1 class="reading__lede panel__lede" id="seriesTitle" data-reveal></h1>
+          <div class="series__intro" id="seriesIntro" hidden><!-- optional essay intro injected by JS --></div>
           <div class="series__grid" id="seriesGrid"><!-- figures injected by JS --></div>
         </div>
       </section>
@@ -263,6 +264,9 @@
     <!-- Photo manifest (widths + dimensions) built by scripts/build-images.mjs;
          must load before script.js, which reads window.PHOTO_MANIFEST. -->
     <script src="media/photos/manifest.js"></script>
+    <!-- Site content (photos + carousel pieces); sets window.SITE_CONTENT,
+         read by script.js and by scripts/generate-routes.mjs. -->
+    <script src="content.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

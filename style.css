@@ -677,6 +677,23 @@ img {
   );
 }
 
+/* Optional essay intro above a series grid (a series-with-writing). Mirrors the
+   reading panel's prose, with room before the grid. */
+.series__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.series__intro-para {
+  margin: 0;
+  font-size: var(--font-body);
+  line-height: var(--line-height-body);
+  text-align: justify;
+  color: var(--color-accent);
+}
+
 .series__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

@@ -115,6 +115,9 @@ to maintain by hand.
 
 ---
 
-**Status:** model agreed, not yet built. Next step is refactoring `ITEMS` in
-`script.js` to this shape and updating the render/routing to derive face +
-payload from the fields instead of a single `type`.
+**Status:** built. Content is authored in `content.js` (`PHOTOS` registry +
+`PIECES`); `script.js` normalizes each piece into the internal item the reel
+and panels render (deriving its visual `type` and click `opens` from the
+fields set); `scripts/generate-routes.mjs` reads the same `content.js` to emit
+`/read/<slug>/` and `/series/<slug>/` routes. To add content, edit
+`content.js` — nothing else.

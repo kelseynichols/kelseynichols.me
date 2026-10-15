@@ -238,7 +238,7 @@
 
   const THEME = { ...THEME_DEFAULTS };
 
-  let activeDebugTab = "motion";
+  let activeDebugTab = "theme";
 
   /* ----------------------------------------------------------------
      DOM
@@ -2666,7 +2666,7 @@
     let debugReady = true;
     try {
       buildDebug();
-      setDebugTab("motion");
+      setDebugTab("theme");
     } catch (err) {
       debugReady = false;
       console.error("Debug panel failed to build; continuing without it.", err);

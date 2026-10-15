@@ -1,6 +1,6 @@
 {
   "//": "Copy this file to photos.config.json (gitignored) and set srcDir to the",
-  "//2": "folder where your full-res master photos live. With Google Drive desktop",
+  "//2": "folder where your full-res original photos live. With Google Drive desktop",
   "//3": "synced, that's a path on this Mac under ~/Library/CloudStorage/. Example:",
-  "srcDir": "/Users/you/Library/CloudStorage/GoogleDrive-you@gmail.com/My Drive/kelseynichols-photos/masters"
+  "srcDir": "/Users/you/Library/CloudStorage/GoogleDrive-you@gmail.com/My Drive/kelseynichols-photos/originals"
 }

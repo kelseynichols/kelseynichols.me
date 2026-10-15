@@ -7,7 +7,7 @@ There is no CDN and no image server — just pre-built files.
 ## The flow, end to end
 
 ```
-media-src/photos/<name>.png        ← masters (full-res, the source of truth)
+media-src/originals/<name>.png        ← originals (full-res, the source of truth)
         │
         │  npm run images   (scripts/build-images.mjs, uses sharp)
         ▼
@@ -23,22 +23,22 @@ media/photos/manifest.js            ← dimensions + available widths per photo
      sizes="…">                     ← browser picks the smallest file that looks sharp
 ```
 
-### 1. Masters — a folder of full-res originals
-**This is the only place you add or replace a photo.** Masters are never served
+### 1. Originals — the full-res source files
+**This is the only place you add or replace a photo.** Originals are never served
 to the browser — they're the big source files the pipeline resizes down.
 
 Where that folder lives is configurable (see
 [Pointing at Google Drive](#pointing-at-google-drive)). By default it's the
-in-repo `media-src/photos/` (today's placeholder stand-ins). The intended setup
+in-repo `media-src/originals/` (today's placeholder stand-ins). The intended setup
 is a **synced Google Drive folder** so the large originals stay out of git.
 
-Masters should be **high-quality exports — large JPEG, PNG, or TIFF**, not
+Originals should be **high-quality exports — large JPEG, PNG, or TIFF**, not
 camera RAW (`.CR2`/`.NEF`/`.ARW`/`.DNG`), which `sharp` can't read. Export from
-your editor first, then save to the masters folder.
+your editor first, then save to the originals folder.
 
 ### 2. Build step — `npm run images`
 Runs `scripts/build-images.mjs` (the [`sharp`](https://sharp.pixelplumbing.com/)
-library). For each master it writes WebP copies at up to four widths —
+library). For each original it writes WebP copies at up to four widths —
 **160 / 320 / 640 / 1280** — into `media/photos/`. It never upscales: a photo
 smaller than 1280px just gets fewer sizes, and its own full width is added as
 the sharpest step. It also writes `media/photos/manifest.js`, a tiny file
@@ -54,7 +54,7 @@ render, a helper (`setPhotoSrc`) builds a responsive `<img>`:
 - **`sizes`** tells the browser how wide the image will actually display in that
   context (carousel frame vs. grid tile vs. tiny thumbnail), so it downloads the
   smallest file that still looks sharp — e.g. a phone pulls a ~320px/~14KB frame
-  instead of a full-res master.
+  instead of a full-res original.
 - intrinsic width/height are set from the manifest so the layout doesn't jump
   while images load.
 
@@ -64,42 +64,42 @@ The photo list in `ITEMS` (top of `script.js`) still references the original
 
 ## Why static / why WebP
 Scale is ~50–100 photos added infrequently, so a CDN is overkill. WebP is
-~5–10× smaller than the PNG masters and is supported by every current browser.
+~5–10× smaller than the PNG originals and is supported by every current browser.
 The big win is mobile: lighter frames mean the carousel no longer stutters
 repainting full-res images mid-swipe.
 
 ## Pointing at Google Drive
 
-The masters folder defaults to `media-src/photos/` in the repo. To read from a
+The originals folder defaults to `media-src/originals/` in the repo. To read from a
 synced Google Drive folder instead (big originals never touch git):
 
 1. Install **Google Drive for desktop** and let it sync. Your Drive then shows
    up as a normal folder on the Mac, under
    `~/Library/CloudStorage/GoogleDrive-<you>@gmail.com/My Drive/…`.
-2. Put your master photos in a folder there, e.g.
-   `…/My Drive/kelseynichols-photos/masters/`.
+2. Put your original photos in a folder there, e.g.
+   `…/My Drive/kelseynichols-photos/originals/`.
 3. In the repo, copy `photos.config.example.json` to **`photos.config.json`**
    and set `srcDir` to that folder's full path. This file is gitignored — it's
    your machine's local setting, not shared.
 4. Run `npm run images`. It prints which folder it read
-   (`Masters: … [photos.config.json]`) so you can confirm.
+   (`Originals: … [photos.config.json]`) so you can confirm.
 
 The derivatives it writes into `media/photos/` still get committed — only the
-masters move to Drive. (One-off alternative without a config file:
+originals move to Drive. (One-off alternative without a config file:
 `PHOTOS_SRC="/path/to/folder" npm run images`.)
 
 ## Adding or replacing a photo
 
-1. Drop the full-res file into your masters folder (`media-src/photos/`, or your
+1. Drop the full-res file into your originals folder (`media-src/originals/`, or your
    Drive folder once configured) — `.png`, `.jpg`, `.webp`, or `.tif`. Use a
    clean, lowercase, hyphenated name; that becomes its ID, e.g. `golden-gate.jpg`.
 2. Run `npm run images`. This rebuilds `media/photos/` from scratch (so removing
-   a master also removes its old derivatives).
+   an original also removes its old derivatives).
 3. Reference it in `ITEMS` in `script.js` by its **original path**, e.g.
    `{ type: "photo", src: "media/photos/golden-gate.jpg", alt: "…" }`.
-   (In the `ITEMS` data you can write the master's extension; the browser is
+   (In the `ITEMS` data you can write the original's extension; the browser is
    served the `.webp` derivatives regardless.)
-4. Commit the new files in `media/photos/` (and the master in `media-src/` for
+4. Commit the new files in `media/photos/` (and the original in `media-src/` for
    now) along with your `script.js` change.
 
 ## Testing locally

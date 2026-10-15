@@ -1,16 +1,16 @@
-// Responsive image pipeline. Reads master photos from media-src/photos/ and
-// emits web-ready WebP derivatives at a few widths into media/photos/, plus a
-// manifest the client uses to build <img srcset>. Local dev only — run with
+// Responsive image pipeline. Reads original photos from media-src/originals/
+// and emits web-ready WebP derivatives at a few widths into media/photos/, plus
+// a manifest the client uses to build <img srcset>. Local dev only — run with
 // `npm run images`. The deployed site stays static (CI only runs the route
-// generator); the derivatives + manifest are committed, the masters are the
+// generator); the derivatives + manifest are committed, the originals are the
 // source of truth.
 //
-// Where the masters live is configurable so they can move out of the repo into
-// a synced Google Drive folder without touching this script (big originals
+// Where the originals live is configurable so they can move out of the repo
+// into a synced Google Drive folder without touching this script (big originals
 // don't belong in git). Resolution order:
 //   1. PHOTOS_SRC env var          — PHOTOS_SRC="/path" npm run images
 //   2. photos.config.json {srcDir} — a gitignored file you set once (preferred)
-//   3. media-src/photos/           — the in-repo stand-in masters (default)
+//   3. media-src/originals/        — the in-repo stand-in originals (default)
 // A relative srcDir is resolved from the repo root.
 
 import sharp from "sharp";
@@ -38,22 +38,22 @@ function resolveSrcDir() {
       return { dir, from: "photos.config.json" };
     }
   }
-  return { dir: join(root, "media-src", "photos"), from: "default (in-repo)" };
+  return { dir: join(root, "media-src", "originals"), from: "default (in-repo)" };
 }
 
 const { dir: SRC_DIR, from: SRC_FROM } = resolveSrcDir();
 if (!existsSync(SRC_DIR)) {
   console.error(
-    `Masters folder not found: ${SRC_DIR}\n  (source: ${SRC_FROM})\n` +
+    `Originals folder not found: ${SRC_DIR}\n  (source: ${SRC_FROM})\n` +
       `Fix the path in photos.config.json, set PHOTOS_SRC, or add the folder.`
   );
   process.exit(1);
 }
-console.log(`Masters: ${SRC_DIR}  [${SRC_FROM}]\n`);
+console.log(`Originals: ${SRC_DIR}  [${SRC_FROM}]\n`);
 
 // Target widths span carousel thumbs up to a near-full-viewport focused cover.
-// A master is never upscaled: we keep only targets <= its width, then add the
-// master's own width as the sharpest step (capped at the largest target).
+// An original is never upscaled: we keep only targets <= its width, then add the
+// original's own width as the sharpest step (capped at the largest target).
 const TARGET_WIDTHS = [160, 320, 640, 1280];
 const QUALITY = 80;
 

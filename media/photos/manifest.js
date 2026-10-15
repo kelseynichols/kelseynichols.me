@@ -139,6 +139,16 @@ window.PHOTO_MANIFEST = {
       819
     ]
   },
+  "red-img": {
+    "w": 1709,
+    "h": 2364,
+    "widths": [
+      160,
+      320,
+      640,
+      1280
+    ]
+  },
   "riverside-sunbathers": {
     "w": 768,
     "h": 1024,

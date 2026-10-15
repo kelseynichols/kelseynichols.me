@@ -53,6 +53,7 @@
      Configuration — edit this array to swap content
   ---------------------------------------------------------------- */
   const ITEMS = [
+    { type: "photo", src: "media/photos/red-img.jpg", alt: "Test photo." },
     { type: "photo", src: "media/photos/ladder-workers.png", alt: "Street scene with two workers carrying a ladder past a warm yellow wall." },
     { type: "photo", src: "media/photos/flower-shop-double-exposure.png", alt: "Double-exposure of a flower shop street scene." },
     {

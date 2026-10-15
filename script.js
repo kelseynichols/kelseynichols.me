@@ -50,113 +50,76 @@
   };
 
   /* ----------------------------------------------------------------
-     Configuration — edit this array to swap content
+     Content — photos + pieces are authored in content.js
+     (window.SITE_CONTENT), read there too by scripts/generate-routes.mjs.
+     Each piece is normalized here into the internal item the reel and panels
+     render: `type` is the visual kind (CSS class + filter), `opens` is what a
+     click on the focused frame does. See docs/content-model.md.
   ---------------------------------------------------------------- */
-  const ITEMS = [
-    { type: "photo", src: "media/photos/red-img.jpg", alt: "Test photo." },
-    { type: "photo", src: "media/photos/ladder-workers.png", alt: "Street scene with two workers carrying a ladder past a warm yellow wall." },
-    { type: "photo", src: "media/photos/flower-shop-double-exposure.png", alt: "Double-exposure of a flower shop street scene." },
-    {
-      // A "series" is a project: one cover frame in the reel, opening to a
-      // grid of the whole set. `src` is the carousel cover; `photos` is the
-      // grid. Placeholder frames below reuse existing images — swap for the
-      // real set later (same shape as a photo item: { src, alt }).
-      type: "series",
-      slug: "lofoten",
-      title: "Lofoten",
-      meta: "Norway · 2024",
-      src: "media/photos/iceberg.png",
-      alt: "Lofoten — a sculpted iceberg in still water.",
-      photos: [
-        { src: "media/photos/iceberg.png", alt: "Sculpted blue iceberg floating in still water." },
-        { src: "media/photos/nordic-bathhouse.png", alt: "Boardwalk and bathhouse by the sea, swimmers below." },
-        { src: "media/photos/badlands.png", alt: "Figure standing amid eroded ridges." },
-        { src: "media/photos/lake-backflip.png", alt: "A diver backflipping off a platform into a lake." },
-        { src: "media/photos/riverside-sunbathers.png", alt: "People sunbathing along a wooden waterfront deck." },
-        { src: "media/photos/tropical-beach.png", alt: "A palm-lined beach with mountains and sailboats." },
-        { src: "media/photos/seven-magic-mountains.png", alt: "Colorful stacked boulder sculptures in the desert." },
-        { src: "media/photos/life-ring-portrait.png", alt: "Portrait beside a life ring, with a light leak." },
-      ],
-    },
-    { type: "web",   src: null, alt: "Web project preview." },
-    { type: "photo", src: "media/photos/jacaranda-tree.png", alt: "A blooming jacaranda tree against a stone wall." },
-    { type: "photo", src: "media/photos/wild-sunflowers.png", alt: "A field of wild sunflowers against the sky." },
-    { type: "photo", src: "media/photos/white-temple.png",  alt: "Ornate white temple architecture against clouds." },
-    {
-      type: "writing",
-      slug: "helen-park",
-      meta: "April 2025",
-      title: "Lorem Ipsum Dolor Sit Amet.",
-      body: "Curabitur in nulla a ipsum laoreet imperdiet. Proin semper egestas gravida. Integer id risus ex. In id fermentum tortor. Integer volutpat magna eu purus porttitor porta id eu nibh.",
-      full: [
-        "Curabitur in nulla a ipsum laoreet imperdiet. Proin semper egestas gravida. Integer id risus ex. In id fermentum tortor. Integer volutpat magna eu purus porttitor porta id eu nibh. Sed euismod, nunc sit amet aliquam lacinia, nisl nisl aliquet nisl, nec aliquam nisl nisl sit amet nisl.",
-        "Aenean lacinia, magna ut posuere consectetur, leo nibh dignissim odio, ac volutpat lectus odio at urna. Maecenas convallis, lacus eget porta congue, nibh velit varius elit, quis tincidunt sem sapien vitae nunc. Donec feugiat quam a venenatis aliquam.",
-        "Integer aliquet condimentum eros, vel lobortis sapien pharetra eu. Suspendisse potenti. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. This is placeholder body copy standing in for the full piece.",
-        "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nam at tortor in tellus interdum sagittis. The real essay lands here — this view is only demonstrating how reading a full piece feels.",
-      ],
-    },
-    { type: "photo", src: "media/photos/rocking-chairs-portrait.png", alt: "Two women sitting together on white rocking chairs." },
-    { type: "photo", src: "media/photos/badlands.png", alt: "Figure standing amid the eroded ridges of the Badlands." },
-    { type: "photo", src: "media/photos/lily-pond.png", alt: "Pink water lilies floating on a dark pond." },
-    { type: "web",   src: null, alt: "Web project preview." },
-    { type: "photo", src: "media/photos/life-ring-portrait.png", alt: "Portrait beside a life ring, with a light leak." },
-    { type: "photo", src: "media/photos/seven-magic-mountains.png", alt: "Colorful stacked boulder sculptures in the desert." },
-    { type: "photo", src: "media/photos/iceberg.png", alt: "Sculpted blue iceberg floating in still water." },
-    {
-      type: "writing",
-      slug: "quiet-mornings",
-      meta: "March 2025",
-      title: "Quiet Mornings In Long Beach.",
-      body: "Aenean lacinia, magna ut posuere consectetur, leo nibh dignissim odio, ac volutpat lectus odio at urna. Maecenas convallis, lacus eget porta congue, nibh velit varius elit.",
-      full: [
-        "Aenean lacinia, magna ut posuere consectetur, leo nibh dignissim odio, ac volutpat lectus odio at urna. Maecenas convallis, lacus eget porta congue, nibh velit varius elit, quis tincidunt sem sapien vitae nunc.",
-        "Donec feugiat quam a venenatis aliquam. Integer aliquet condimentum eros, vel lobortis sapien pharetra eu. The morning light in Long Beach does something specific to the color of everything — this is where that observation would live.",
-        "Suspendisse potenti. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Placeholder text, standing in for the full piece.",
-      ],
-    },
-    { type: "photo", src: "media/photos/laundromat.png", alt: "Rows of washers and dryers lit by warm evening light." },
-    {
-      type: "series",
-      slug: "kyoto",
-      title: "Kyoto",
-      meta: "Japan · 2023",
-      src: "media/photos/kyoto-pagoda.png",
-      alt: "Kyoto — a red umbrella on a street, pagoda behind.",
-      photos: [
-        { src: "media/photos/kyoto-pagoda.png", alt: "A woman with a red umbrella on a Kyoto street, pagoda behind." },
-        { src: "media/photos/white-temple.png", alt: "Ornate white temple architecture against clouds." },
-        { src: "media/photos/jacaranda-tree.png", alt: "A blooming jacaranda tree against a stone wall." },
-        { src: "media/photos/lily-pond.png", alt: "Pink water lilies floating on a dark pond." },
-        { src: "media/photos/garden-bench.png", alt: "Three people reading on a bench along a garden boardwalk." },
-        { src: "media/photos/laundromat.png", alt: "Rows of washers and dryers lit by warm evening light." },
-      ],
-    },
-    { type: "photo", src: "media/photos/arched-balconies.png", alt: "Looking up at rows of curved balcony architecture." },
-    { type: "web",   src: null, alt: "Web project preview." },
-    { type: "photo", src: "media/photos/riverside-sunbathers.png", alt: "People sunbathing along a wooden waterfront deck." },
-    { type: "photo", src: "media/photos/tropical-beach.png", alt: "A palm-lined tropical beach with mountains and sailboats." },
-    { type: "photo", src: "media/photos/lake-backflip.png", alt: "A diver backflipping off a platform into a lake." },
-    {
-      type: "writing",
-      slug: "notes-on-light",
-      meta: "February 2025",
-      title: "Notes On Light And Color.",
-      body: "Donec feugiat quam a venenatis aliquam. Integer aliquet condimentum eros, vel lobortis sapien pharetra eu. Suspendisse potenti. Pellentesque habitant morbi tristique senectus.",
-      full: [
-        "Donec feugiat quam a venenatis aliquam. Integer aliquet condimentum eros, vel lobortis sapien pharetra eu. Suspendisse potenti. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
-        "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae. Shooting film teaches you to see color as something you wait for rather than something you fix later — the full note picks that up here.",
-        "Nam at tortor in tellus interdum sagittis. Placeholder body copy standing in for the full piece so the reading flow can be felt end to end.",
-      ],
-    },
-    { type: "photo", src: "media/photos/garden-bench.png", alt: "Three people reading on a bench along a garden boardwalk." },
-    { type: "photo", src: "media/photos/brick-balconies.png", alt: "Brick apartment facade with residents on their balconies." },
-    { type: "photo", src: "media/photos/yellow-daisies.png", alt: "Close-up of yellow daisies with dark purple centers." },
-    { type: "photo", src: "media/photos/sf-cable-car.png", alt: "A cable car on a San Francisco street among skyscrapers." },
-    // Contact sheet: the last card in the reel. Its cover is a viewfinder of
-    // tiny frames; clicking it opens the full grid of ALL work (every photo
-    // plus every series frame, gathered in ALL_PHOTOS below).
-    { type: "archive", title: "All work" },
-  ];
+  const CONTENT = window.SITE_CONTENT || { photos: {}, pieces: [] };
+  const PHOTOS = CONTENT.photos || {};
+
+  // Resolve a photo reference — an id into PHOTOS, or an inline { src, alt } —
+  // to { src, alt }. Unknown ids resolve to null (skipped) rather than throw.
+  function resolvePhoto(ref, altOverride) {
+    if (!ref) return null;
+    const p = typeof ref === "string" ? PHOTOS[ref] : ref;
+    if (!p || !p.src) return null;
+    return { src: p.src, alt: altOverride != null ? altOverride : p.alt || "" };
+  }
+
+  // Derive each piece's face (type) + click behavior (opens) from which fields
+  // it has: web → browser card; photos → series; cover → photo (with writing,
+  // a photo-essay that opens reading); writing only → text card.
+  function normalizePiece(piece) {
+    const item = {
+      title: piece.title || "",
+      meta: piece.meta || "",
+      slug: piece.slug || null,
+      opens: null,
+    };
+    const cover = resolvePhoto(piece.cover, piece.alt);
+    const photos = Array.isArray(piece.photos)
+      ? piece.photos.map((r) => resolvePhoto(r)).filter(Boolean)
+      : null;
+    const writing = Array.isArray(piece.writing) ? piece.writing : null;
+
+    if (piece.archive) {
+      item.type = "archive";
+      item.opens = "archive";
+    } else if (piece.web !== undefined) {
+      item.type = "web";
+      item.opens = "web";
+      item.web = piece.web || null;
+      if (cover) { item.src = cover.src; item.alt = cover.alt; }
+    } else if (photos && photos.length) {
+      item.type = "series";
+      item.opens = "series";
+      item.src = (cover || photos[0]).src;
+      item.alt = (cover || photos[0]).alt;
+      item.photos = photos;
+      if (writing) item.full = writing; // series with an essay intro
+    } else if (cover) {
+      item.type = "photo";
+      item.src = cover.src;
+      item.alt = cover.alt;
+      if (writing) { // photo-essay: a photo that opens a reading panel
+        item.opens = "reading";
+        item.full = writing;
+        item.body = piece.excerpt || writing[0] || "";
+      }
+    } else if (writing) {
+      item.type = "writing";
+      item.opens = "reading";
+      item.full = writing;
+      item.body = piece.excerpt || writing[0] || "";
+    } else {
+      item.type = "photo"; // empty piece — nothing to render, keep the slot
+    }
+    return item;
+  }
+
+  const ITEMS = (CONTENT.pieces || []).map(normalizePiece);
 
   // How many sample frames the contact-sheet COVER shows (a 3-col grid, so a
   // multiple of 3 fills cleanly). The /all/ panel still shows every frame.
@@ -166,7 +129,7 @@
   // each series' frames. Powers the contact-sheet cover and the /all/ grid.
   const ALL_PHOTOS = [];
   ITEMS.forEach((it) => {
-    if (it.type === "photo") ALL_PHOTOS.push({ src: it.src, alt: it.alt || "" });
+    if (it.type === "photo" && it.src) ALL_PHOTOS.push({ src: it.src, alt: it.alt || "" });
     else if (it.type === "series") {
       (it.photos || []).forEach((p) => ALL_PHOTOS.push({ src: p.src, alt: p.alt || "" }));
     }
@@ -527,12 +490,15 @@
         if (v < 0) return;
         const cur = Math.round(offset);
         if (v === cur) {
-          if (item.type === "writing" && item.slug && Array.isArray(item.full) && item.full.length) {
+          // A focused frame's click behavior is its derived `opens`.
+          if (item.opens === "reading" && item.slug) {
             openReading(item.slug);
-          } else if (item.type === "series" && item.slug && Array.isArray(item.photos) && item.photos.length) {
+          } else if (item.opens === "series" && item.slug) {
             openSeries(item.slug);
-          } else if (item.type === "archive") {
+          } else if (item.opens === "archive") {
             openArchive();
+          } else if (item.opens === "web" && item.web) {
+            window.open(item.web, "_blank", "noopener");
           }
           return;
         }
@@ -2205,7 +2171,7 @@
   // slug -> writing item, built from ITEMS so content lives in one place.
   const WRITING = {};
   ITEMS.forEach((it) => {
-    if (it.type === "writing" && it.slug) WRITING[it.slug] = it;
+    if (it.opens === "reading" && it.slug) WRITING[it.slug] = it;
   });
 
   const readingMetaEl = document.getElementById("readingMeta");
@@ -2251,11 +2217,12 @@
   // slug -> series item, built from ITEMS so content lives in one place.
   const SERIES = {};
   ITEMS.forEach((it) => {
-    if (it.type === "series" && it.slug) SERIES[it.slug] = it;
+    if (it.opens === "series" && it.slug) SERIES[it.slug] = it;
   });
 
   const seriesMetaEl = document.getElementById("seriesMeta");
   const seriesTitleEl = document.getElementById("seriesTitle");
+  const seriesIntroEl = document.getElementById("seriesIntro");
   const seriesGridEl = document.getElementById("seriesGrid");
 
   // Populate the series grid for a slug. Must run BEFORE the panel opens so
@@ -2268,6 +2235,21 @@
     delete seriesMetaEl.dataset.text;
     seriesTitleEl.textContent = item.title || "";
     delete seriesTitleEl.dataset.text;
+    // Optional essay intro: a series that also carries `writing` shows its
+    // paragraphs above the grid (a series-with-essay). Hidden when absent.
+    if (seriesIntroEl) {
+      seriesIntroEl.innerHTML = "";
+      delete seriesIntroEl.dataset.text;
+      const intro = Array.isArray(item.full) ? item.full : [];
+      intro.forEach((para) => {
+        const p = document.createElement("p");
+        p.className = "series__intro-para";
+        p.setAttribute("data-reveal", "");
+        p.textContent = para;
+        seriesIntroEl.appendChild(p);
+      });
+      seriesIntroEl.hidden = intro.length === 0;
+    }
     seriesGridEl.innerHTML = "";
     (item.photos || []).forEach((photo) => {
       const fig = document.createElement("figure");

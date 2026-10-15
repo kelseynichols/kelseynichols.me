@@ -19,7 +19,11 @@ const js = readFileSync(join(root, "script.js"), "utf8");
 const version = (process.env.GITHUB_SHA || Date.now().toString()).slice(0, 8);
 const shell = rawShell
   .replace('href="style.css"', `href="style.css?v=${version}"`)
-  .replace('src="script.js"', `src="script.js?v=${version}"`);
+  .replace('src="script.js"', `src="script.js?v=${version}"`)
+  .replace(
+    'src="media/photos/manifest.js"',
+    `src="media/photos/manifest.js?v=${version}"`
+  );
 
 // Slugs come straight from the ITEMS data in script.js, so adding a piece or
 // series there is all it takes — no route list to keep in sync here. Each item

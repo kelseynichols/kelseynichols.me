@@ -12,6 +12,12 @@
 # Claude Code
 .claude/
 
+# Local build tooling (image pipeline) — never deployed
+node_modules/
+
+# Local image-pipeline config (your machine's path to the Drive masters folder)
+photos.config.json
+
 # Local planning doc — kept out of the repo intentionally
 ROADMAP.md
 NOTES.md

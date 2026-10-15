@@ -686,6 +686,12 @@ img {
   margin-bottom: 40px;
 }
 
+/* When there's no essay the element is [hidden]; the display rule above would
+   otherwise override that and leave its margin as a gap under the title. */
+.series__intro[hidden] {
+  display: none;
+}
+
 .series__intro-para {
   margin: 0;
   font-size: var(--font-body);

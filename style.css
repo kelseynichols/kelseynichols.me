@@ -1566,18 +1566,17 @@ img {
     font-size: var(--font-body);
   }
 
-  /* Give the scrubber a wider center column on phones (the side nav/location
-     need little room), so its ticks can spread out — the gap is width-fit to
-     this column in applyTheme(). Plus more breathing room below it. */
   .footer {
-    grid-template-columns: 1fr 1.6fr 1fr;
+    grid-template-columns: 1fr 2fr 1fr;
   }
+  /* The scrubber's visible width IS this width: applyTheme() measures the
+     scrubber box and fits the tick gap to it, so an explicit width is the one
+     dial for how wide the scrubber reads on phones. Centered in its column.
+     (An explicit width — not shrink-wrap — also avoids the circular measure
+     that forced the old justify-self:stretch.) Nudge the value to taste. */
   .scrubber {
-    /* Fill the center column (base rule shrink-wraps it via justify-self:
-       center, which made the width measurement in applyTheme circular and let
-       the ticks overflow + sit off-centre). Stretched, the box = the column,
-       so the gap fits it and justify-content:center centres the ticks in it. */
-    justify-self: stretch;
+    justify-self: center;
+    width: min(34vw, 150px);
     padding-bottom: 18px;
   }
 

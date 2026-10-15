@@ -5,17 +5,51 @@
 // generator); the derivatives + manifest are committed, the masters are the
 // source of truth.
 //
-// Masters today are stand-in placeholders living in the repo. Later, repoint
-// SRC_DIR at a Drive/Dropbox sync folder and keep the real masters out of git.
+// Where the masters live is configurable so they can move out of the repo into
+// a synced Google Drive folder without touching this script (big originals
+// don't belong in git). Resolution order:
+//   1. PHOTOS_SRC env var          — PHOTOS_SRC="/path" npm run images
+//   2. photos.config.json {srcDir} — a gitignored file you set once (preferred)
+//   3. media-src/photos/           — the in-repo stand-in masters (default)
+// A relative srcDir is resolved from the repo root.
 
 import sharp from "sharp";
-import { readdirSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
-import { dirname, join, basename, extname } from "node:path";
+import {
+  readdirSync,
+  mkdirSync,
+  writeFileSync,
+  rmSync,
+  existsSync,
+  readFileSync,
+} from "node:fs";
+import { dirname, join, basename, extname, isAbsolute, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SRC_DIR = join(root, "media-src", "photos");
 const OUT_DIR = join(root, "media", "photos");
+
+function resolveSrcDir() {
+  if (process.env.PHOTOS_SRC) return { dir: process.env.PHOTOS_SRC, from: "PHOTOS_SRC env" };
+  const cfgPath = join(root, "photos.config.json");
+  if (existsSync(cfgPath)) {
+    const { srcDir } = JSON.parse(readFileSync(cfgPath, "utf8"));
+    if (srcDir) {
+      const dir = isAbsolute(srcDir) ? srcDir : resolve(root, srcDir);
+      return { dir, from: "photos.config.json" };
+    }
+  }
+  return { dir: join(root, "media-src", "photos"), from: "default (in-repo)" };
+}
+
+const { dir: SRC_DIR, from: SRC_FROM } = resolveSrcDir();
+if (!existsSync(SRC_DIR)) {
+  console.error(
+    `Masters folder not found: ${SRC_DIR}\n  (source: ${SRC_FROM})\n` +
+      `Fix the path in photos.config.json, set PHOTOS_SRC, or add the folder.`
+  );
+  process.exit(1);
+}
+console.log(`Masters: ${SRC_DIR}  [${SRC_FROM}]\n`);
 
 // Target widths span carousel thumbs up to a near-full-viewport focused cover.
 // A master is never upscaled: we keep only targets <= its width, then add the

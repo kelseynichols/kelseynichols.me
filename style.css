@@ -1576,7 +1576,7 @@ img {
      that forced the old justify-self:stretch.) Nudge the value to taste. */
   .scrubber {
     justify-self: center;
-    width: min(48vw, 210px);
+    width: min(54vw, 235px);
     padding-bottom: 18px;
   }
 

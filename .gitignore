@@ -12,6 +12,9 @@
 # Claude Code
 .claude/
 
+# Local build tooling (image pipeline) — never deployed
+node_modules/
+
 # Local planning doc — kept out of the repo intentionally
 ROADMAP.md
 NOTES.md

@@ -8,6 +8,48 @@
   "use strict";
 
   /* ----------------------------------------------------------------
+     Responsive images — point an <img> at the WebP derivatives built
+     by scripts/build-images.mjs. ITEMS still reference the original
+     `media/photos/<name>.png` path; we derive the base name from it and
+     look the widths up in window.PHOTO_MANIFEST (loaded by manifest.js
+     before this script). `sizes` is the rendered width in each context so
+     the browser downloads the smallest file that still looks sharp — the
+     carousel pulls a ~320px frame instead of a full-res master, which is
+     the mobile paint-lag fix. Falls back to the original src if a base is
+     missing from the manifest (e.g. before the pipeline has run).
+  ---------------------------------------------------------------- */
+  const PHOTO_MANIFEST = window.PHOTO_MANIFEST || {};
+
+  function setPhotoSrc(img, src, sizes) {
+    if (!src) return;
+    const base = src.replace(/^.*\//, "").replace(/\.[^.]+$/, "");
+    const entry = PHOTO_MANIFEST[base];
+    if (!entry) {
+      img.src = src; // pipeline hasn't run / unknown image — use the master
+      return;
+    }
+    const url = (w) => `media/photos/${base}-${w}.webp`;
+    img.srcset = entry.widths.map((w) => `${url(w)} ${w}w`).join(", ");
+    img.sizes = sizes;
+    // Fallback src for engines that ignore srcset: a mid step, never the
+    // sharpest (keeps the no-srcset payload light).
+    const fallback =
+      entry.widths.find((w) => w >= 640) || entry.widths[entry.widths.length - 1];
+    img.src = url(fallback);
+    // Intrinsic ratio kills layout shift before the file loads.
+    img.width = entry.w;
+    img.height = entry.h;
+  }
+
+  // Rendered-width hints per context (see setPhotoSrc). Portrait frames, so
+  // widths stay well under viewport width even on desktop.
+  const SIZES = {
+    carousel: "(max-width: 768px) 90vw, 42vh",
+    tile: "(max-width: 768px) 45vw, 22vw",
+    thumb: "80px",
+  };
+
+  /* ----------------------------------------------------------------
      Configuration — edit this array to swap content
   ---------------------------------------------------------------- */
   const ITEMS = [
@@ -346,7 +388,7 @@
 
       if (item.type === "photo") {
         const img = document.createElement("img");
-        img.src = item.src;
+        setPhotoSrc(img, item.src, SIZES.carousel);
         img.alt = item.alt || "";
         img.loading = "lazy";
         img.decoding = "async";
@@ -357,7 +399,7 @@
         // (CSS box-shadow) stacks a couple of "sheets" behind the frame so it
         // reads as more work waiting inside.
         const img = document.createElement("img");
-        img.src = item.src;
+        setPhotoSrc(img, item.src, SIZES.carousel);
         img.alt = item.alt || "";
         img.loading = "lazy";
         img.decoding = "async";
@@ -383,7 +425,7 @@
         grid.className = "item__archive-grid";
         ALL_PHOTOS.slice(0, ARCHIVE_COVER_MAX).forEach((photo) => {
           const img = document.createElement("img");
-          img.src = photo.src;
+          setPhotoSrc(img, photo.src, SIZES.thumb);
           img.alt = "";
           img.loading = "lazy";
           img.decoding = "async";
@@ -2231,7 +2273,7 @@
       fig.className = "series__frame";
       fig.setAttribute("data-reveal-block", "");
       const img = document.createElement("img");
-      img.src = photo.src;
+      setPhotoSrc(img, photo.src, SIZES.tile);
       img.alt = photo.alt || "";
       img.loading = "lazy";
       img.decoding = "async";
@@ -2267,7 +2309,7 @@
       fig.className = "series__frame";
       fig.setAttribute("data-reveal-block", "");
       const img = document.createElement("img");
-      img.src = photo.src;
+      setPhotoSrc(img, photo.src, SIZES.tile);
       img.alt = photo.alt || "";
       img.loading = "lazy";
       img.decoding = "async";

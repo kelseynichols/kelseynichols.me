@@ -1,0 +1,14 @@
+{
+  "name": "kelseynichols.me",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hand-built static site. Local-only build tooling; the deployed site stays static.",
+  "type": "module",
+  "scripts": {
+    "images": "node scripts/build-images.mjs",
+    "routes": "node scripts/generate-routes.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.33.5"
+  }
+}

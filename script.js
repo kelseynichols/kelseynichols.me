@@ -29,13 +29,13 @@
       return;
     }
     const url = (w) => `media/photos/${base}-${w}.webp`;
-    img.srcset = entry.widths.map((w) => `${url(w)} ${w}w`).join(", ");
+    // Lazy before any source is set: setting src/srcset on a non-lazy <img>
+    // starts a fetch immediately. No fallback `src` either — every browser
+    // that decodes WebP supports srcset, and a src gets fetched alongside the
+    // srcset pick (a wasted extra download per photo).
+    img.loading = "lazy";
     img.sizes = sizes;
-    // Fallback src for engines that ignore srcset: a mid step, never the
-    // sharpest (keeps the no-srcset payload light).
-    const fallback =
-      entry.widths.find((w) => w >= 640) || entry.widths[entry.widths.length - 1];
-    img.src = url(fallback);
+    img.srcset = entry.widths.map((w) => `${url(w)} ${w}w`).join(", ");
     // Intrinsic ratio kills layout shift before the file loads.
     img.width = entry.w;
     img.height = entry.h;
@@ -45,6 +45,11 @@
   // widths stay well under viewport width even on desktop.
   const SIZES = {
     carousel: "(max-width: 768px) 90vw, 42vh",
+    // Carousel items far from focus. On mobile they render as ~100px
+    // thumbnails, so ask for a small file instead of the 90vw one (a 3x
+    // iPhone would otherwise pull the largest width for every item).
+    // render() upgrades an item to SIZES.carousel as it nears focus.
+    carouselIdle: "(max-width: 768px) 100px, 42vh",
     tile: "(max-width: 768px) 45vw, 22vw",
     thumb: "80px",
   };
@@ -309,6 +314,7 @@
   // Per-item state
   const itemNodes = [];      // .item elements
   const itemScaleNodes = []; // .item__scale wrappers
+  const itemImgs = [];       // photo <img> still on SIZES.carouselIdle, else null
   const inSet = [];          // bool: currently matches filter
   const presence = [];       // 0..1: animated for filter transitions
   const presenceTarget = []; // 0 or 1
@@ -330,6 +336,7 @@
     track.innerHTML = "";
     itemNodes.length = 0;
     itemScaleNodes.length = 0;
+    itemImgs.length = 0;
     inSet.length = 0;
     presence.length = 0;
     presenceTarget.length = 0;
@@ -349,10 +356,12 @@
 
       const inner = document.createElement("div");
       inner.className = "item__inner";
+      itemImgs[i] = null;
 
       if (item.type === "photo") {
         const img = document.createElement("img");
-        setPhotoSrc(img, item.src, SIZES.carousel);
+        setPhotoSrc(img, item.src, SIZES.carouselIdle);
+        if (img.srcset) itemImgs[i] = img;
         img.alt = item.alt || "";
         img.loading = "lazy";
         img.decoding = "async";
@@ -363,7 +372,8 @@
         // (CSS box-shadow) stacks a couple of "sheets" behind the frame so it
         // reads as more work waiting inside.
         const img = document.createElement("img");
-        setPhotoSrc(img, item.src, SIZES.carousel);
+        setPhotoSrc(img, item.src, SIZES.carouselIdle);
+        if (img.srcset) itemImgs[i] = img;
         img.alt = item.alt || "";
         img.loading = "lazy";
         img.decoding = "async";
@@ -669,6 +679,12 @@
         baseSize = sizeAtDistance(dist);
         isFocused = Math.abs(dist) < 0.5;
         visIdx++;
+        // Swap in the full-size file a couple of items ahead of focus so it's
+        // loaded by the time the item grows. One-way: once big, stays big.
+        if (itemImgs[i] && Math.abs(dist) < 2.5) {
+          itemImgs[i].sizes = SIZES.carousel;
+          itemImgs[i] = null;
+        }
       } else {
         baseSize = thumbSize;
       }
@@ -2292,13 +2308,23 @@
       fig.className = "series__frame";
       fig.setAttribute("data-reveal-block", "");
       const img = document.createElement("img");
-      setPhotoSrc(img, photo.src, SIZES.tile);
+      // Source attached on first open (loadArchiveImages): the closed panel
+      // still sits over the viewport, so lazy-loading alone wouldn't stop
+      // every tile downloading on the first visit to the homepage.
+      img.dataset.src = photo.src;
       img.alt = photo.alt || "";
-      img.loading = "lazy";
       img.decoding = "async";
       img.draggable = false;
       fig.appendChild(img);
       archiveGridEl.appendChild(fig);
+    });
+  }
+
+  function loadArchiveImages() {
+    if (!archiveGridEl) return;
+    archiveGridEl.querySelectorAll("img[data-src]").forEach((img) => {
+      setPhotoSrc(img, img.dataset.src, SIZES.tile);
+      delete img.dataset.src;
     });
   }
 
@@ -2526,6 +2552,7 @@
     }
     if (target === activePanel) return;
     if (!target) { closePanel(activePanel); return; }
+    if (target.el === archiveEl) loadArchiveImages();
     if (!activePanel) openPanel(target);
     else switchPanel(activePanel, target);
   }

@@ -3,42 +3,42 @@
 ---------------------------------------------------------------- */
 @font-face {
   font-family: "Monaspace Xenon";
-  src: url("fonts/MonaspaceXenon-Regular.otf") format("opentype");
+  src: url("fonts/MonaspaceXenon-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: block;
 }
 @font-face {
   font-family: "Monaspace Xenon";
-  src: url("fonts/MonaspaceXenon-Italic.otf") format("opentype");
+  src: url("fonts/MonaspaceXenon-Italic.woff2") format("woff2");
   font-weight: 400;
   font-style: italic;
   font-display: block;
 }
 @font-face {
   font-family: "Monaspace Xenon";
-  src: url("fonts/MonaspaceXenon-Bold.otf") format("opentype");
+  src: url("fonts/MonaspaceXenon-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: block;
 }
 @font-face {
   font-family: "Monaspace Xenon";
-  src: url("fonts/MonaspaceXenon-BoldItalic.otf") format("opentype");
+  src: url("fonts/MonaspaceXenon-BoldItalic.woff2") format("woff2");
   font-weight: 700;
   font-style: italic;
   font-display: block;
 }
 @font-face {
   font-family: "Monaspace Xenon";
-  src: url("fonts/MonaspaceXenon-ExtraLight.otf") format("opentype");
+  src: url("fonts/MonaspaceXenon-ExtraLight.woff2") format("woff2");
   font-weight: 200;
   font-style: normal;
   font-display: block;
 }
 @font-face {
   font-family: "Monaspace Xenon";
-  src: url("fonts/MonaspaceXenon-ExtraLightItalic.otf") format("opentype");
+  src: url("fonts/MonaspaceXenon-ExtraLightItalic.woff2") format("woff2");
   font-weight: 200;
   font-style: italic;
   font-display: block;

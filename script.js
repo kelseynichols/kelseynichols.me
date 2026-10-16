@@ -55,8 +55,9 @@
   };
 
   /* ----------------------------------------------------------------
-     Content — photos + pieces are authored in content.js
-     (window.SITE_CONTENT), read there too by scripts/generate-routes.mjs.
+     Content — photos + pieces come from content.js (window.SITE_CONTENT),
+     generated from the content folder by `npm run content` (see
+     docs/content-folder.md); scripts/generate-routes.mjs reads it too.
      Each piece is normalized here into the internal item the reel and panels
      render: `type` is the visual kind (CSS class + filter), `opens` is what a
      click on the focused frame does. See docs/content-model.md.

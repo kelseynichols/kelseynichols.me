@@ -1,0 +1,3 @@
+---
+cover: seven-magic-mountains
+---

@@ -5,10 +5,12 @@
   "description": "Hand-built static site. Local-only build tooling; the deployed site stays static.",
   "type": "module",
   "scripts": {
+    "content": "node scripts/build-content.mjs && node scripts/build-images.mjs",
     "images": "node scripts/build-images.mjs",
     "routes": "node scripts/generate-routes.mjs"
   },
   "devDependencies": {
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "yaml": "^2.9.1"
   }
 }

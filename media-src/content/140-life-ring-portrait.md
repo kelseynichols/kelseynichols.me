@@ -1,0 +1,3 @@
+---
+cover: life-ring-portrait
+---

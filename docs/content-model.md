@@ -115,9 +115,10 @@ to maintain by hand.
 
 ---
 
-**Status:** built. Content is authored in `content.js` (`PHOTOS` registry +
-`PIECES`); `script.js` normalizes each piece into the internal item the reel
+**Status:** built. Content is authored in the **content folder** (see
+[content-folder.md](content-folder.md)); `npm run content` generates
+`content.js` (`photos` registry + `pieces`) from it. `script.js` normalizes each piece into the internal item the reel
 and panels render (deriving its visual `type` and click `opens` from the
 fields set); `scripts/generate-routes.mjs` reads the same `content.js` to emit
-`/read/<slug>/` and `/series/<slug>/` routes. To add content, edit
-`content.js` — nothing else.
+`/read/<slug>/` and `/series/<slug>/` routes. To add content, change the
+content folder and run `npm run content` — don't edit `content.js` by hand.

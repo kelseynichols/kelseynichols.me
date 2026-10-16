@@ -1,55 +1,43 @@
-// Responsive image pipeline. Reads original photos from media-src/originals/
-// and emits web-ready WebP derivatives at a few widths into media/photos/, plus
-// a manifest the client uses to build <img srcset>. Local dev only — run with
-// `npm run images`. The deployed site stays static (CI only runs the route
-// generator); the derivatives + manifest are committed, the originals are the
-// source of truth.
+// Responsive image pipeline. Reads every photo in the content folder (loose
+// photos and series folders — see docs/content-folder.md) and emits web-ready
+// WebP derivatives at a few widths into media/photos/, plus a manifest the
+// client uses to build <img srcset>. Local dev only — run with `npm run images`
+// (or `npm run content`, which also regenerates content.js). The deployed site
+// stays static (CI only runs the route generator); the derivatives + manifest
+// are committed, the content folder is the source of truth.
 //
-// Where the originals live is configurable so they can move out of the repo
-// into a synced Google Drive folder without touching this script (big originals
-// don't belong in git). Resolution order:
-//   1. PHOTOS_SRC env var          — PHOTOS_SRC="/path" npm run images
-//   2. photos.config.json {srcDir} — a gitignored file you set once (preferred)
-//   3. media-src/originals/        — the in-repo stand-in originals (default)
-// A relative srcDir is resolved from the repo root.
+// Where the content folder lives: see resolveContentDir in lib/content-folder.mjs
+// (CONTENT_DIR env, photos.config.json {contentDir}, or media-src/content/).
+//
+// Incremental: a photo is only re-encoded when one of its outputs is missing or
+// older than the original, so re-running on a big folder is quick. Outputs for
+// photos that were removed or renamed are deleted.
 
 import sharp from "sharp";
-import {
-  readdirSync,
-  mkdirSync,
-  writeFileSync,
-  rmSync,
-  existsSync,
-  readFileSync,
-} from "node:fs";
-import { dirname, join, basename, extname, isAbsolute, resolve } from "node:path";
+import { mkdirSync, writeFileSync, readdirSync, rmSync, statSync, existsSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveContentDir, readContentFolder, reportProblems } from "./lib/content-folder.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = join(root, "media", "photos");
 
-function resolveSrcDir() {
-  if (process.env.PHOTOS_SRC) return { dir: process.env.PHOTOS_SRC, from: "PHOTOS_SRC env" };
-  const cfgPath = join(root, "photos.config.json");
-  if (existsSync(cfgPath)) {
-    const { srcDir } = JSON.parse(readFileSync(cfgPath, "utf8"));
-    if (srcDir) {
-      const dir = isAbsolute(srcDir) ? srcDir : resolve(root, srcDir);
-      return { dir, from: "photos.config.json" };
-    }
-  }
-  return { dir: join(root, "media-src", "originals"), from: "default (in-repo)" };
-}
-
-const { dir: SRC_DIR, from: SRC_FROM } = resolveSrcDir();
-if (!existsSync(SRC_DIR)) {
+const { dir, from } = resolveContentDir(root);
+if (!existsSync(dir)) {
   console.error(
-    `Originals folder not found: ${SRC_DIR}\n  (source: ${SRC_FROM})\n` +
-      `Fix the path in photos.config.json, set PHOTOS_SRC, or add the folder.`
+    `Content folder not found: ${dir}\n  (source: ${from})\n` +
+      `Fix the path in photos.config.json, set CONTENT_DIR, or add the folder.`
   );
   process.exit(1);
 }
-console.log(`Originals: ${SRC_DIR}  [${SRC_FROM}]\n`);
+console.log(`Content folder: ${dir}  [${from}]\n`);
+
+const result = readContentFolder(dir);
+reportProblems(result, dir);
+if (result.photos.size === 0) {
+  console.error(`No photos found in ${dir}`);
+  process.exit(1);
+}
 
 // Target widths span carousel thumbs up to a near-full-viewport focused cover.
 // An original is never upscaled: we keep only targets <= its width, then add the
@@ -57,44 +45,54 @@ console.log(`Originals: ${SRC_DIR}  [${SRC_FROM}]\n`);
 const TARGET_WIDTHS = [160, 320, 640, 1280];
 const QUALITY = 80;
 
-const files = readdirSync(SRC_DIR).filter((f) =>
-  /\.(png|jpe?g|webp|tiff?)$/i.test(f)
-);
-if (files.length === 0) {
-  console.error(`No master images found in ${SRC_DIR}`);
-  process.exit(1);
-}
-
-// Rebuild the output dir from scratch so renamed/removed masters never leave
-// orphaned derivatives behind.
-rmSync(OUT_DIR, { recursive: true, force: true });
 mkdirSync(OUT_DIR, { recursive: true });
 
 const manifest = {};
+const expected = new Set(["manifest.js"]);
+let built = 0;
 
-for (const file of files) {
-  const base = basename(file, extname(file));
-  const input = sharp(join(SRC_DIR, file));
+for (const [id, photo] of result.photos) {
+  const input = sharp(photo.path);
   const meta = await input.metadata();
-  const srcW = meta.width;
-  const srcH = meta.height;
+  // EXIF orientation 5–8 means the stored pixels are rotated 90°.
+  const rotated = meta.orientation >= 5;
+  const srcW = rotated ? meta.height : meta.width;
+  const srcH = rotated ? meta.width : meta.height;
 
   let widths = TARGET_WIDTHS.filter((w) => w <= srcW);
   const maxTarget = TARGET_WIDTHS[TARGET_WIDTHS.length - 1];
   if (srcW < maxTarget && !widths.includes(srcW)) widths.push(srcW);
   if (widths.length === 0) widths = [srcW];
 
-  for (const w of widths) {
-    await input
-      .clone()
-      .resize({ width: w, withoutEnlargement: true })
-      .webp({ quality: QUALITY })
-      .toFile(join(OUT_DIR, `${base}-${w}.webp`));
+  const srcTime = statSync(photo.path).mtimeMs;
+  const outputs = widths.map((w) => join(OUT_DIR, `${id}-${w}.webp`));
+  outputs.forEach((o) => expected.add(o.slice(OUT_DIR.length + 1)));
+  const fresh = outputs.every((o) => existsSync(o) && statSync(o).mtimeMs >= srcTime);
+
+  if (!fresh) {
+    for (let i = 0; i < widths.length; i++) {
+      await input
+        .clone()
+        .rotate() // apply EXIF orientation so phone photos aren't sideways
+        .resize({ width: widths[i], withoutEnlargement: true })
+        .webp({ quality: QUALITY })
+        .toFile(outputs[i]);
+    }
+    built++;
+    console.log(`  ${id}  ${srcW}×${srcH}  →  ${widths.join(", ")}`);
   }
 
   // Intrinsic dimensions let the client set aspect-ratio and kill layout shift.
-  manifest[base] = { w: srcW, h: srcH, widths };
-  console.log(`  ${base}  ${srcW}×${srcH}  →  ${widths.join(", ")}`);
+  manifest[id] = { w: srcW, h: srcH, widths };
+}
+
+// Drop derivatives for photos that were removed or renamed.
+let removed = 0;
+for (const f of readdirSync(OUT_DIR)) {
+  if (!expected.has(f)) {
+    rmSync(join(OUT_DIR, f));
+    removed++;
+  }
 }
 
 // Emitted as a tiny JS file (not JSON) so it loads synchronously via a <script>
@@ -108,5 +106,7 @@ writeFileSync(
 );
 
 console.log(
-  `\nBuilt ${files.length} image(s) → ${OUT_DIR} and wrote manifest.js`
+  `\n${result.photos.size} photo(s): ${built} built, ${result.photos.size - built} unchanged` +
+    (removed ? `, ${removed} old file(s) removed` : "") +
+    `. Wrote manifest.js`
 );

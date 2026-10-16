@@ -1,0 +1,3 @@
+---
+cover: garden-bench
+---

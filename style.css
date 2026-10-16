@@ -1087,15 +1087,22 @@ img {
   grid-auto-rows: 1fr;
   gap: 2px;
 }
-.item__archive-grid img {
+.item__archive-cell {
+  position: relative;
+  overflow: hidden;
+  /* Without this, a 1fr row floors at its content's height, so rows came out
+     unequal. 0 keeps them equal. */
+  min-width: 0;
+  min-height: 0;
+}
+/* Absolute so the image's intrinsic size never feeds the grid layout. */
+.item__archive-cell img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  /* Without this, a 1fr row floors at its images' intrinsic height, so the
-     first (lazy-loaded) row ballooned taller than the rest. 0 keeps rows equal. */
-  min-width: 0;
-  min-height: 0;
 }
 
 /* Writing */

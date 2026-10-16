@@ -398,13 +398,20 @@
         const grid = document.createElement("div");
         grid.className = "item__archive-grid";
         ALL_PHOTOS.slice(0, ARCHIVE_COVER_MAX).forEach((photo) => {
+          // Each frame sits in its own cell and is absolutely positioned
+          // inside it, so the image's intrinsic size (from setPhotoSrc) can't
+          // size the grid row — Safari otherwise let it overflow the cell and
+          // the crop landed off-center.
+          const cell = document.createElement("span");
+          cell.className = "item__archive-cell";
           const img = document.createElement("img");
           setPhotoSrc(img, photo.src, SIZES.thumb);
           img.alt = "";
           img.loading = "lazy";
           img.decoding = "async";
           img.draggable = false;
-          grid.appendChild(img);
+          cell.appendChild(img);
+          grid.appendChild(cell);
         });
         inner.appendChild(grid);
 

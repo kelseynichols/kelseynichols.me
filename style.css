@@ -1557,8 +1557,11 @@ img {
 ---------------------------------------------------------------- */
 @media (max-width: 768px) {
   :root {
-    --focused-size: min(85vw, 370px);
+    /* 80vw + a tight gap leaves a ~30px sliver of the next item at the right
+       edge — the cue that the reel swipes sideways. */
+    --focused-size: min(80vw, 370px);
     --thumb-size: min(22vw, 100px);
+    --item-gap: 12px;
     /* Thinner frame inset so the photo fills more of the card on phones. */
     --item-padding: 8px;
     --chrome-pad: 16px;

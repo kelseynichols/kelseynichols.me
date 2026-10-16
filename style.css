@@ -304,6 +304,32 @@ img {
   transition: opacity 340ms var(--easing), transform 420ms var(--easing);
 }
 
+/* Fade the scrolling text out as it nears the fixed header/footer, so the
+   nav stays in front and legible and the text reads as scrolling behind it.
+   Every panel scrolls, so every panel gets it. --fade-*-clear is a band at
+   the edge where text is fully hidden (mobile: behind the stacked nav). */
+.panel {
+  --fade-top: 104px;
+  --fade-bottom: 104px;
+  --fade-bottom-clear: 0px;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--fade-top),
+    #000 calc(100% - var(--fade-bottom)),
+    transparent calc(100% - var(--fade-bottom-clear)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--fade-top),
+    #000 calc(100% - var(--fade-bottom)),
+    transparent calc(100% - var(--fade-bottom-clear)),
+    transparent 100%
+  );
+}
+
 .panel.is-active {
   opacity: 1;
   transform: translateY(0);
@@ -616,27 +642,6 @@ img {
   padding: 96px 0 88px;
 }
 
-/* Fade the scrolling text out as it nears the fixed header/footer, so the
-   nav stays in front and legible and the text reads as scrolling behind it.
-   Scoped to the reading scroll container; the global chrome is untouched. */
-.reading {
-  --reading-fade: 104px;
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent 0,
-    #000 var(--reading-fade),
-    #000 calc(100% - var(--reading-fade)),
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0,
-    #000 var(--reading-fade),
-    #000 calc(100% - var(--reading-fade)),
-    transparent 100%
-  );
-}
-
 .reading__body {
   display: flex;
   flex-direction: column;
@@ -656,25 +661,6 @@ img {
 .series .panel__inner {
   width: min(920px, calc(100% - 48px));
   padding: 96px 0 88px;
-}
-
-/* Same behind-the-nav scroll fade as the reading view. */
-.series {
-  --reading-fade: 104px;
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent 0,
-    #000 var(--reading-fade),
-    #000 calc(100% - var(--reading-fade)),
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0,
-    #000 var(--reading-fade),
-    #000 calc(100% - var(--reading-fade)),
-    transparent 100%
-  );
 }
 
 /* Optional essay intro above a series grid (a series-with-writing). Mirrors the
@@ -1604,7 +1590,18 @@ img {
      past it, fully opaque. (96px fixed looked like far too much space above.) */
   .reading,
   .series {
-    --reading-fade: calc(42px + max(16px, env(safe-area-inset-top)));
+    --fade-top: calc(42px + max(16px, env(safe-area-inset-top)));
+  }
+
+  /* The footer nav stacks three links (~51px) above the home-indicator gap.
+     Hide text completely behind it, fade in over the 40px above, and pad the
+     content so its last line can scroll clear of the fade. */
+  .panel {
+    --fade-bottom-clear: calc(51px + max(16px, env(safe-area-inset-bottom)) + 8px);
+    --fade-bottom: calc(var(--fade-bottom-clear) + 40px);
+  }
+  .panel .panel__inner {
+    padding-bottom: calc(var(--fade-bottom) + 16px);
   }
   .reading .panel__inner,
   .series .panel__inner {

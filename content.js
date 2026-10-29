@@ -12,17 +12,29 @@
 
 window.SITE_CONTENT = {
   photos: {
-    "taiwan-1": {
-      "src": "media/photos/taiwan-1.jpg",
+    "montana-red": {
+      "src": "media/photos/montana-red.jpg",
       "alt": ""
     },
-    "taiwan-2": {
-      "src": "media/photos/taiwan-2.jpg",
+    "taiwan-red": {
+      "src": "media/photos/taiwan-red.jpg",
       "alt": ""
     },
-    "red-img": {
-      "src": "media/photos/red-img.jpg",
-      "alt": "Test photo."
+    "lunar-new-year-market": {
+      "src": "media/photos/lunar-new-year-market.jpg",
+      "alt": ""
+    },
+    "chinese-restaurant-red": {
+      "src": "media/photos/chinese-restaurant-red.jpg",
+      "alt": ""
+    },
+    "japan-red": {
+      "src": "media/photos/japan-red.jpg",
+      "alt": ""
+    },
+    "neon-cafe": {
+      "src": "media/photos/neon-cafe.jpg",
+      "alt": ""
     },
     "ladder-workers": {
       "src": "media/photos/ladder-workers.png",
@@ -115,13 +127,22 @@ window.SITE_CONTENT = {
   },
   pieces: [
     {
-      "cover": "taiwan-1"
+      "cover": "montana-red"
     },
     {
-      "cover": "taiwan-2"
+      "cover": "taiwan-red"
     },
     {
-      "cover": "red-img"
+      "cover": "lunar-new-year-market"
+    },
+    {
+      "cover": "chinese-restaurant-red"
+    },
+    {
+      "cover": "japan-red"
+    },
+    {
+      "cover": "neon-cafe"
     },
     {
       "cover": "ladder-workers"

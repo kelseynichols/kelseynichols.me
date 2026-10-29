@@ -200,7 +200,7 @@
   ---------------------------------------------------------------- */
   const THEME_DEFAULTS = {
     colorBg: "#120C0B",
-    colorAccent: "#C8DEC2",
+    colorAccent: "#9F2105",
     surfaceOpacity: 0.03,
     scrubberDimOpacity: 0.4,
     colorWritingContinue: "#D23D2D",

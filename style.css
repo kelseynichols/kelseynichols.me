@@ -49,9 +49,9 @@
 ---------------------------------------------------------------- */
 :root {
   --color-bg: #120C0B;
-  --color-accent: #C8DEC2;
+  --color-accent: #9F2105;
   --color-surface: rgba(255, 255, 255, 0.03);
-  --color-scrubber-dim: rgba(200, 222, 194, 0.4);
+  --color-scrubber-dim: rgba(159, 33, 5, 0.4);
   --color-writing-continue: #D23D2D;
 
   --font-body: 11px;

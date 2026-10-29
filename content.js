@@ -12,6 +12,14 @@
 
 window.SITE_CONTENT = {
   photos: {
+    "taiwan-1": {
+      "src": "media/photos/taiwan-1.jpg",
+      "alt": ""
+    },
+    "taiwan-2": {
+      "src": "media/photos/taiwan-2.jpg",
+      "alt": ""
+    },
     "red-img": {
       "src": "media/photos/red-img.jpg",
       "alt": "Test photo."
@@ -106,6 +114,12 @@ window.SITE_CONTENT = {
     }
   },
   pieces: [
+    {
+      "cover": "taiwan-1"
+    },
+    {
+      "cover": "taiwan-2"
+    },
     {
       "cover": "red-img"
     },

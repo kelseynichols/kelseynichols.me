@@ -13,7 +13,7 @@
 // Number prefixes set order and are stripped; the rest of the name is the photo
 // id or page slug. Names starting with "_" or "." are ignored (drafts).
 
-import { readdirSync, readFileSync, statSync, existsSync } from "node:fs";
+import { readdirSync, readFileSync, statSync, existsSync, mkdirSync, renameSync } from "node:fs";
 import { join, extname, isAbsolute, resolve } from "node:path";
 import { parse as parseYaml } from "yaml";
 
@@ -288,6 +288,44 @@ export function readContentFolder(dir) {
   pieces.push({ archive: true, title: "All work" });
 
   return { photos, pieces, errors, warnings };
+}
+
+// Move a photo's .md into _removed/ once the photo itself is gone, so it doesn't
+// turn into a stray card. A lone top-level .md counts as left behind when its
+// name was a photo in the last build (previousIds) or when it has nothing a
+// lone .md can show (no writing, cover or web link). A .md with cover: is
+// never touched. Moved, not deleted, so any
+// words in it can be put back. Returns the moved paths, relative to dir.
+export function tidyOrphanedMarkdown(dir, previousIds = new Set()) {
+  const moved = [];
+  const bin = join(dir, "_removed");
+  function moveToBin(entry, label) {
+    if (!existsSync(bin)) mkdirSync(bin);
+    let dest = join(bin, entry.file);
+    for (let n = 2; existsSync(dest); n++) dest = join(bin, `${stem(entry.file)} (${n})${extname(entry.file)}`);
+    renameSync(entry.full, dest);
+    moved.push(label);
+  }
+
+  const top = listDir(dir);
+  const topImageStems = new Set(top.filter((e) => !e.isDir && IMAGE_EXT.test(e.file)).map((e) => stem(e.file)));
+  for (const entry of top) {
+    if (entry.isDir) {
+      const inside = listDir(entry.full);
+      const imageStems = new Set(inside.filter((e) => IMAGE_EXT.test(e.file)).map((e) => stem(e.file)));
+      for (const e of inside) {
+        if (!e.isDir && MD_EXT.test(e.file) && e.file.toLowerCase() !== "info.md" && !imageStems.has(stem(e.file))) {
+          moveToBin(e, `${entry.file}/${e.file}`);
+        }
+      }
+    } else if (MD_EXT.test(entry.file) && !topImageStems.has(stem(entry.file))) {
+      const { data, paragraphs } = readMarkdown(entry.full, { error() {}, warn() {} });
+      if (str(data.cover)) continue; // a cover ref is named after a photo that lives elsewhere
+      const showsSomething = paragraphs.length || "web" in data;
+      if (previousIds.has(entry.name) || !showsSomething) moveToBin(entry, entry.file);
+    }
+  }
+  return moved;
 }
 
 // Print problems with paths shown relative to the content folder; exit

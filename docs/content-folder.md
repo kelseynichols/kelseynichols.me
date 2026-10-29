@@ -135,6 +135,13 @@ Writing is plain paragraphs for now. Bold, italics and links can be added later.
 **Alt text** is a short description of the photo for screen readers and search
 engines. It's optional, and Claude can draft it from the photos for you to edit.
 
+### Deleting a photo
+
+Delete the photo and the build takes care of the rest. Its web-sized copies
+are removed, and if it had a same-name `.md`, that file is moved into
+`_removed/` so it doesn't show up as a stray card. It's moved, not deleted, so
+any words in it can be put back. A `.md` with a `cover:` line is never moved.
+
 ## Photo files
 
 - **JPEG is best.** PNG, WebP and TIFF also work.

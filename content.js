@@ -20,14 +20,6 @@ window.SITE_CONTENT = {
       "src": "media/photos/taiwan-red.jpg",
       "alt": ""
     },
-    "lunar-new-year-market": {
-      "src": "media/photos/lunar-new-year-market.jpg",
-      "alt": ""
-    },
-    "chinese-restaurant-red": {
-      "src": "media/photos/chinese-restaurant-red.jpg",
-      "alt": ""
-    },
     "japan-red": {
       "src": "media/photos/japan-red.jpg",
       "alt": ""
@@ -131,12 +123,6 @@ window.SITE_CONTENT = {
     },
     {
       "cover": "taiwan-red"
-    },
-    {
-      "cover": "lunar-new-year-market"
-    },
-    {
-      "cover": "chinese-restaurant-red"
     },
     {
       "cover": "japan-red"

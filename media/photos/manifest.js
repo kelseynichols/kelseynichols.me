@@ -20,26 +20,6 @@ window.PHOTO_MANIFEST = {
       1280
     ]
   },
-  "lunar-new-year-market": {
-    "w": 2083,
-    "h": 3114,
-    "widths": [
-      160,
-      320,
-      640,
-      1280
-    ]
-  },
-  "chinese-restaurant-red": {
-    "w": 3494,
-    "h": 2352,
-    "widths": [
-      160,
-      320,
-      640,
-      1280
-    ]
-  },
   "japan-red": {
     "w": 1641,
     "h": 2475,

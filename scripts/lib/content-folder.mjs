@@ -113,6 +113,17 @@ function str(v) {
   return v == null ? undefined : String(v).trim() || undefined;
 }
 
+// The hundreds digit of a top-level number picks the piece's color section,
+// which tints the site's text while it's in focus (100s red, 200s orange…).
+// Other numbers (and unnumbered pieces) keep the default text color.
+const TONES = { 1: "red", 2: "orange", 3: "green", 4: "blue", 5: "purple" };
+
+function withTone(piece, order) {
+  const tone = Number.isFinite(order) ? TONES[Math.floor(order / 100)] : undefined;
+  if (tone) piece.tone = tone;
+  return piece;
+}
+
 export function readContentFolder(dir) {
   const errors = [];
   const warnings = [];
@@ -169,7 +180,7 @@ export function readContentFolder(dir) {
 
   for (const entry of top) {
     if (entry.isDir) {
-      pieces.push(readSeries(entry));
+      pieces.push(withTone(readSeries(entry), entry.order));
     } else if (IMAGE_EXT.test(entry.file)) {
       const id = addPhoto(entry);
       if (!id) continue;
@@ -181,7 +192,7 @@ export function readContentFolder(dir) {
         if (str(data.alt)) photos.get(id).alt = str(data.alt);
         Object.assign(piece, pieceFields(data, paragraphs, entry, sidecarPath));
       }
-      pieces.push(piece);
+      pieces.push(withTone(piece, entry.order));
     } else if (MD_EXT.test(entry.file)) {
       if (topImages.has(stem(entry.file))) continue; // sidecar, handled with its image
       const { data, paragraphs } = readMarkdown(entry.full, problems);
@@ -196,7 +207,7 @@ export function readContentFolder(dir) {
       if (!piece.cover && !piece.writing && !("web" in piece)) {
         problems.warn(`${entry.full}: no writing, cover or web link — it will show as an empty card`);
       }
-      pieces.push(piece);
+      pieces.push(withTone(piece, entry.order));
     } else if (!flagUnsupported(entry)) {
       problems.warn(`${entry.full}: not a photo, folder or .md file (ignored)`);
     }

@@ -83,6 +83,7 @@
       meta: piece.meta || "",
       slug: piece.slug || null,
       opens: null,
+      tone: piece.tone || null,
     };
     const cover = resolvePhoto(piece.cover, piece.alt);
     const photos = Array.isArray(piece.photos)
@@ -220,6 +221,10 @@
     aboutLineDurationMs: 600,  // per-line slide duration (identical for entrance + exit)
     aboutRevealEasing: "easeOutCirc", // per-line curve, same for entrance + exit
     aboutVideoEnabled: false, // halftone loop in the corner, off by default
+    // Color by section: text tints to the focused piece's color section as
+    // you scroll (100s red, 200s orange…; colors live in style.css "Color
+    // sections"). Set to false to turn it off and keep one accent color.
+    sectionColors: true,
     // First-load intro (page chrome reveals through the About line masks
     // while the gallery plays its Work-entry transition)
     introStartMs: 80,
@@ -667,6 +672,25 @@
     return 1 - t * (1 - CONFIG.itemMinOpacity);
   }
 
+  // Text color follows the focused piece's color section (see TONES in
+  // style.css). Set on <body> so it sits over the Theme tab's root accent;
+  // pieces without a tone fall back to that accent. Opening a panel leaves the
+  // last tone in place, so a series keeps the color it was opened from.
+  let currentTone;
+  function setTone(tone) {
+    if (tone === currentTone) return;
+    if (currentTone === undefined) {
+      // First paint: land on the color without fading in from the default.
+      document.body.style.transition = "none";
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        document.body.style.transition = "";
+      }));
+    }
+    currentTone = tone;
+    if (tone) document.body.dataset.tone = tone;
+    else delete document.body.dataset.tone;
+  }
+
   function render() {
     const n = countInSet();
     if (n === 0) {
@@ -715,6 +739,7 @@
         el.style.filter = "";
       }
       el.classList.toggle("is-focused", inSet[i] && isFocused);
+      if (inSet[i] && isFocused) setTone(ITEMS[i].tone);
     }
 
     // 2) Lay out: widths, padding (scaled with presence), margin-left for gap.
@@ -1399,6 +1424,7 @@
     root.style.setProperty("--intro-stage-fade", `${THEME.introStageFadeMs}ms`);
     root.style.setProperty("--intro-stage-scale", `${THEME.introStageScaleMs}ms`);
     root.classList.toggle("about-video-enabled", !!THEME.aboutVideoEnabled);
+    root.classList.toggle("tones-off", !THEME.sectionColors);
 
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     if (themeMeta) themeMeta.setAttribute("content", THEME.colorBg);
@@ -1546,6 +1572,13 @@
         setValue: (v) => { THEME[field.key] = v; },
       }, applyTheme);
     });
+    addDebugRow(debugThemeControls, {
+      key: "sectionColors",
+      label: "Color by section",
+      type: "checkbox",
+      getValue: () => THEME.sectionColors,
+      setValue: (v) => { THEME.sectionColors = v; },
+    }, applyTheme);
 
     addSectionTitle(debugThemeControls, "Surfaces");
     THEME_OPACITY_FIELDS.forEach((field) => {
@@ -1861,6 +1894,13 @@
       videoToggle.checked = !!THEME.aboutVideoEnabled;
       const valueEl = videoToggle.parentElement.querySelector(".debug__value");
       if (valueEl) valueEl.textContent = videoToggle.checked ? "On" : "Off";
+    }
+
+    const toneToggle = document.getElementById("dbg-sectionColors");
+    if (toneToggle) {
+      toneToggle.checked = !!THEME.sectionColors;
+      const valueEl = toneToggle.parentElement.querySelector(".debug__value");
+      if (valueEl) valueEl.textContent = toneToggle.checked ? "On" : "Off";
     }
   }
 

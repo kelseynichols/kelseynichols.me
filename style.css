@@ -130,6 +130,36 @@ body {
   inset: 0;
 }
 
+/* ----------------------------------------------------------------
+   Color sections
+
+   The carousel's number ranges are color sections (100s red, 200s orange…);
+   the build tags each piece with its tone and script.js sets data-tone on
+   <body> for the focused one. Soft tints, not pure hues, so small text stays
+   readable on the dark background — except red, pushed to a saturated hue on
+   purpose so the 100s read bold. Registering --color-accent lets it fade.
+
+   ON/OFF: set `sectionColors: false` in THEME_DEFAULTS (script.js), or untick
+   "Color by section" in the debug panel's Theme tab. Off puts .tones-off on
+   <html>, so the rules below stop matching and text stays the root accent.
+---------------------------------------------------------------- */
+@property --color-accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #C8DEC2;
+}
+body {
+  transition: --color-accent 0.6s ease;
+}
+html:not(.tones-off) body[data-tone] {
+  --color-scrubber-dim: color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+html:not(.tones-off) body[data-tone="red"]    { --color-accent: #FF5A45; }
+html:not(.tones-off) body[data-tone="orange"] { --color-accent: #F4C39A; }
+html:not(.tones-off) body[data-tone="green"]  { --color-accent: #C8DEC2; }
+html:not(.tones-off) body[data-tone="blue"]   { --color-accent: #AFCBE8; }
+html:not(.tones-off) body[data-tone="purple"] { --color-accent: #D3B8E6; }
+
 a {
   color: inherit;
   text-decoration: none;
@@ -1008,8 +1038,8 @@ img {
   overflow: hidden;
   cursor: pointer;
   box-shadow:
-    7px 7px 0 -1px rgba(200, 222, 194, 0.14),
-    14px 14px 0 -2px rgba(200, 222, 194, 0.07);
+    7px 7px 0 -1px color-mix(in srgb, var(--color-accent) 14%, transparent),
+    14px 14px 0 -2px color-mix(in srgb, var(--color-accent) 7%, transparent);
 }
 .item--series .item__inner img {
   width: 100%;

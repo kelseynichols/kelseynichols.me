@@ -60,16 +60,6 @@ window.PHOTO_MANIFEST = {
       1280
     ]
   },
-  "ladder-workers": {
-    "w": 819,
-    "h": 1024,
-    "widths": [
-      160,
-      320,
-      640,
-      819
-    ]
-  },
   "flower-shop-double-exposure": {
     "w": 819,
     "h": 1024,
@@ -257,16 +247,6 @@ window.PHOTO_MANIFEST = {
       320,
       640,
       820
-    ]
-  },
-  "yellow-daisies": {
-    "w": 819,
-    "h": 1024,
-    "widths": [
-      160,
-      320,
-      640,
-      819
     ]
   },
   "sf-cable-car": {

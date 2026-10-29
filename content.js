@@ -36,10 +36,6 @@ window.SITE_CONTENT = {
       "src": "media/photos/china-yellow.jpg",
       "alt": ""
     },
-    "ladder-workers": {
-      "src": "media/photos/ladder-workers.png",
-      "alt": "Street scene with two workers carrying a ladder past a warm yellow wall."
-    },
     "flower-shop-double-exposure": {
       "src": "media/photos/flower-shop-double-exposure.png",
       "alt": "Double-exposure of a flower shop street scene."
@@ -116,10 +112,6 @@ window.SITE_CONTENT = {
       "src": "media/photos/brick-balconies.png",
       "alt": "Brick apartment facade with residents on their balconies."
     },
-    "yellow-daisies": {
-      "src": "media/photos/yellow-daisies.png",
-      "alt": "Close-up of yellow daisies with dark purple centers."
-    },
     "sf-cable-car": {
       "src": "media/photos/sf-cable-car.png",
       "alt": "A cable car on a San Francisco street among skyscrapers."
@@ -143,9 +135,6 @@ window.SITE_CONTENT = {
     },
     {
       "cover": "china-yellow"
-    },
-    {
-      "cover": "ladder-workers"
     },
     {
       "cover": "flower-shop-double-exposure"
@@ -270,9 +259,6 @@ window.SITE_CONTENT = {
     },
     {
       "cover": "brick-balconies"
-    },
-    {
-      "cover": "yellow-daisies"
     },
     {
       "cover": "sf-cable-car"

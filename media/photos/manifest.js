@@ -40,6 +40,26 @@ window.PHOTO_MANIFEST = {
       1280
     ]
   },
+  "guate-yellow": {
+    "w": 924,
+    "h": 1374,
+    "widths": [
+      160,
+      320,
+      640,
+      924
+    ]
+  },
+  "china-yellow": {
+    "w": 1712,
+    "h": 2582,
+    "widths": [
+      160,
+      320,
+      640,
+      1280
+    ]
+  },
   "ladder-workers": {
     "w": 819,
     "h": 1024,

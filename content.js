@@ -28,6 +28,14 @@ window.SITE_CONTENT = {
       "src": "media/photos/neon-cafe.jpg",
       "alt": ""
     },
+    "guate-yellow": {
+      "src": "media/photos/guate-yellow.jpg",
+      "alt": ""
+    },
+    "china-yellow": {
+      "src": "media/photos/china-yellow.jpg",
+      "alt": ""
+    },
     "ladder-workers": {
       "src": "media/photos/ladder-workers.png",
       "alt": "Street scene with two workers carrying a ladder past a warm yellow wall."
@@ -129,6 +137,12 @@ window.SITE_CONTENT = {
     },
     {
       "cover": "neon-cafe"
+    },
+    {
+      "cover": "guate-yellow"
+    },
+    {
+      "cover": "china-yellow"
     },
     {
       "cover": "ladder-workers"

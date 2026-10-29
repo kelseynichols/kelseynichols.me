@@ -12,12 +12,12 @@
 
 window.SITE_CONTENT = {
   photos: {
-    "montana-red": {
-      "src": "media/photos/montana-red.jpg",
-      "alt": ""
-    },
     "taiwan-red": {
       "src": "media/photos/taiwan-red.jpg",
+      "alt": ""
+    },
+    "montana-red": {
+      "src": "media/photos/montana-red.jpg",
       "alt": ""
     },
     "japan-red": {
@@ -119,10 +119,10 @@ window.SITE_CONTENT = {
   },
   pieces: [
     {
-      "cover": "montana-red"
+      "cover": "taiwan-red"
     },
     {
-      "cover": "taiwan-red"
+      "cover": "montana-red"
     },
     {
       "cover": "japan-red"
